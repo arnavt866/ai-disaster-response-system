@@ -1,0 +1,24 @@
+from pydantic import BaseModel, Field
+
+
+class DisasterZoneBase(BaseModel):
+    zone_name: str
+    disaster_type: str
+    severity: str
+    latitude: float = Field(ge=-90, le=90)
+
+    longitude: float = Field(ge=-180, le=180)
+
+    affected_population: int = Field(ge=0)
+    status: str = "Active"
+
+
+class DisasterZoneCreate(DisasterZoneBase):
+    pass
+
+
+class DisasterZoneResponse(DisasterZoneBase):
+    id: int
+
+    class Config:
+        from_attributes = True
