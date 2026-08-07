@@ -1,4 +1,5 @@
 from datetime import datetime
+
 from sqlalchemy.orm import Session
 
 from app.models.disaster_event import DisasterEvent
@@ -43,7 +44,7 @@ def disaster_exists(
 def import_disaster(
     db: Session,
     disaster_data: dict
-):
+)-> DisasterEvent | None:
     """
     Import a single disaster into PostgreSQL.
     """

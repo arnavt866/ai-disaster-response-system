@@ -2,18 +2,13 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
 from app.database.dependencies import get_db
-
-from app.schemas.disaster_zone import (
-    DisasterZoneCreate,
-    DisasterZoneResponse
-)
-
+from app.schemas.disaster_zone import DisasterZoneCreate, DisasterZoneResponse
 from app.services.zone_service import (
     create_zone,
+    delete_zone,
     get_all_zones,
     get_zone_by_id,
     update_zone,
-    delete_zone
 )
 
 router = APIRouter(

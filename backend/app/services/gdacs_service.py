@@ -1,12 +1,10 @@
-import httpx
-
 from datetime import datetime
 
+import httpx
 from sqlalchemy.orm import Session
 
-from app.core.config import GDACS_URL
-
-from app.services.disaster_import_service import import_disaster
+from app.config.settings import GDACS_URL
+from app.services.ingestion.disaster_import_service import import_disaster
 
 
 def get_gdacs_severity(alert_level: str | None) -> str:
@@ -31,7 +29,9 @@ def get_gdacs_severity(alert_level: str | None) -> str:
     return "Unknown"
 
 
-def fetch_gdacs_events(db: Session):
+def fetch_gdacs_events(
+    db: Session,
+) -> dict:
 
     with httpx.Client(
         timeout=httpx.Timeout(

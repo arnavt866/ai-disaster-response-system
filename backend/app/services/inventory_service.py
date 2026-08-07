@@ -4,7 +4,7 @@ from app.models.resource_inventory import ResourceInventory
 from app.schemas.resource_inventory import ResourceInventoryCreate
 
 
-def create_inventory(db: Session, inventory: ResourceInventoryCreate):
+def create_inventory(db: Session, inventory: ResourceInventoryCreate) -> ResourceInventory:
 
     db_inventory = ResourceInventory(**inventory.model_dump())
 
@@ -17,11 +17,11 @@ def create_inventory(db: Session, inventory: ResourceInventoryCreate):
     return db_inventory
 
 
-def get_all_inventory(db: Session):
+def get_all_inventory(db: Session) -> list[ResourceInventory]:
 
     return db.query(ResourceInventory).all()
 
-def get_inventory_by_id(db: Session, inventory_id: int):
+def get_inventory_by_id(db: Session, inventory_id: int) -> ResourceInventory | None:
 
     return (
         db.query(ResourceInventory)
@@ -33,7 +33,7 @@ def update_inventory(
     db: Session,
     inventory_id: int,
     updated_inventory: ResourceInventoryCreate
-):
+) -> ResourceInventory | None:
 
     inventory = (
         db.query(ResourceInventory)
@@ -60,7 +60,7 @@ def update_inventory(
 def delete_inventory(
     db: Session,
     inventory_id: int
-):
+) -> ResourceInventory | None:
 
     inventory = (
         db.query(ResourceInventory)

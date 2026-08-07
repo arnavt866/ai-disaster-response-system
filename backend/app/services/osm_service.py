@@ -14,8 +14,8 @@ OpenStreetMap Overpass API.
 def get_nearby_buildings(
     latitude: float,
     longitude: float,
-    radius: int = 5000
-):
+    radius: int = 5000,
+) -> dict:
 
     return {
 

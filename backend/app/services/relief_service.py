@@ -4,7 +4,7 @@ from app.models.relief_center import ReliefCenter
 from app.schemas.relief_center import ReliefCenterCreate
 
 
-def create_relief_center(db: Session, center: ReliefCenterCreate):
+def create_relief_center(db: Session, center: ReliefCenterCreate) -> ReliefCenter:
     db_center = ReliefCenter(**center.model_dump())
 
     db.add(db_center)
@@ -14,13 +14,13 @@ def create_relief_center(db: Session, center: ReliefCenterCreate):
     return db_center
 
 
-def get_all_relief_centers(db: Session):
+def get_all_relief_centers(db: Session) -> list[ReliefCenter]:
     return db.query(ReliefCenter).all()
 
 def get_relief_center_by_id(
     db: Session,
     center_id: int
-):
+) -> ReliefCenter | None:
 
     return (
         db.query(ReliefCenter)
@@ -32,7 +32,7 @@ def update_relief_center(
     db: Session,
     center_id: int,
     updated_center: ReliefCenterCreate
-):
+) -> ReliefCenter | None:
 
     center = (
         db.query(ReliefCenter)
@@ -61,7 +61,7 @@ def update_relief_center(
 def delete_relief_center(
     db: Session,
     center_id: int
-):
+) -> ReliefCenter | None:
 
     center = (
         db.query(ReliefCenter)

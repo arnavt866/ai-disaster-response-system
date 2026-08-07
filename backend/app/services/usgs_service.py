@@ -1,8 +1,11 @@
-import httpx
 from datetime import datetime
+
+import httpx
 from sqlalchemy.orm import Session
-from app.core.config import USGS_URL
-from app.services.disaster_import_service import import_disaster
+
+from app.config.settings import USGS_URL
+from app.services.ingestion.disaster_import_service import import_disaster
+
 
 def get_usgs_severity(
     magnitude: float | None
@@ -22,7 +25,9 @@ def get_usgs_severity(
 
     return "Critical"
 
-def fetch_usgs_earthquakes(db: Session):
+def fetch_usgs_earthquakes(
+    db: Session,
+) -> dict:
     """
     Fetch earthquake data from the USGS feed
     and import new events into the database.

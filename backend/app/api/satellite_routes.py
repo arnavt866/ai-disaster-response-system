@@ -1,8 +1,6 @@
 from fastapi import APIRouter
 
-from app.services.satellite_service import (
-    get_nearby_facilities
-)
+from app.services.geospatial.satellite_service import get_nearby_facilities
 
 router = APIRouter(
     prefix="/satellite",

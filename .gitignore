@@ -1,4 +1,64 @@
-.venv/
+# Local datasets
+backend/data/
+
+# Python
+
 __pycache__/
-*.pyc
+*.py[cod]
+*$py.class
+
+# Virtual Environment
+
+.venv/
+venv/
+env/
+
+# Environment Variables
+
 .env
+
+# Logs
+
+logs/
+*.log
+
+# IDE
+
+.idea/
+.vscode/
+
+# Python cache
+
+.pytest_cache/
+.mypy_cache/
+
+# OS
+
+.DS_Store
+Thumbs.db
+
+# Build
+
+build/
+dist/
+
+# Jupyter
+
+.ipynb_checkpoints/
+
+# Bytecode
+
+*.pyo
+
+# SQLite
+
+*.sqlite3
+
+# Coverage
+
+.coverage
+htmlcov/
+
+# Temporary
+
+*.tmp

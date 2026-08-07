@@ -4,7 +4,7 @@ from app.models.disaster_zone import DisasterZone
 from app.schemas.disaster_zone import DisasterZoneCreate
 
 
-def create_zone(db: Session, zone: DisasterZoneCreate):
+def create_zone(db: Session, zone: DisasterZoneCreate) -> DisasterZone:
 
     db_zone = DisasterZone(**zone.model_dump())
 
@@ -17,14 +17,14 @@ def create_zone(db: Session, zone: DisasterZoneCreate):
     return db_zone
 
 
-def get_all_zones(db: Session):
+def get_all_zones(db: Session) -> list[DisasterZone]:
 
     return db.query(DisasterZone).all()
 
 def get_zone_by_id(
     db: Session,
     zone_id: int
-):
+) -> DisasterZone | None:
 
     return (
         db.query(DisasterZone)
@@ -36,7 +36,7 @@ def update_zone(
     db: Session,
     zone_id: int,
     updated_zone: DisasterZoneCreate
-):
+) -> DisasterZone | None:
 
     zone = (
         db.query(DisasterZone)
@@ -64,7 +64,7 @@ def update_zone(
 def delete_zone(
     db: Session,
     zone_id: int
-):
+) -> DisasterZone | None:
 
     zone = (
         db.query(DisasterZone)

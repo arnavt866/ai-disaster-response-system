@@ -1,5 +1,5 @@
-from sqlalchemy.exc import IntegrityError
 from fastapi import HTTPException
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
 from app.models.disaster_event import DisasterEvent
@@ -25,13 +25,15 @@ def create_disaster(db: Session, disaster: DisasterEventCreate):
         )
 
 
-def get_all_disasters(db: Session):
+def get_all_disasters(
+    db: Session,
+) -> list[DisasterEvent]:
     return db.query(DisasterEvent).all()
 
 def get_disaster_by_id(
     db: Session,
     disaster_id: int
-):
+) -> DisasterEvent | None:
 
     return (
         db.query(DisasterEvent)
@@ -43,7 +45,7 @@ def update_disaster(
     db: Session,
     disaster_id: int,
     updated_disaster: DisasterEventCreate
-):
+) -> DisasterEvent | None:
 
     disaster = (
         db.query(DisasterEvent)
@@ -86,7 +88,7 @@ def update_disaster(
 def delete_disaster(
     db: Session,
     disaster_id: int
-):
+) -> DisasterEvent | None:
 
     disaster = (
         db.query(DisasterEvent)

@@ -1,9 +1,8 @@
+import httpx
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
-import httpx
 
 from app.database.dependencies import get_db
-
 from app.services.usgs_service import fetch_usgs_earthquakes
 
 router = APIRouter(

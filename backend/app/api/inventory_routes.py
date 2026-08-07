@@ -4,15 +4,14 @@ from sqlalchemy.orm import Session
 from app.database.dependencies import get_db
 from app.schemas.resource_inventory import (
     ResourceInventoryCreate,
-    ResourceInventoryResponse
+    ResourceInventoryResponse,
 )
-
 from app.services.inventory_service import (
     create_inventory,
+    delete_inventory,
     get_all_inventory,
     get_inventory_by_id,
     update_inventory,
-    delete_inventory
 )
 
 router = APIRouter(

@@ -1,9 +1,8 @@
-import httpx
 
 NDMA_FEED_URL = "https://sachet.ndma.gov.in/"
 
 
-def fetch_ndma_events():
+def fetch_ndma_events() -> dict:
     """
     Placeholder for NDMA integration.
 
