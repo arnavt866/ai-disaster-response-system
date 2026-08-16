@@ -1,0 +1,588 @@
+{
+  "matched_districts": [],
+  "unmatched_historical_districts": [],
+  "unmatched_geojson_districts": [
+    {
+      "state": "Odisha",
+      "geojson_district": "Anugul",
+      "reason": "No historical XML records mapped to this district. May be a post-reorganization district."
+    },
+    {
+      "state": "Odisha",
+      "geojson_district": "Balangir",
+      "reason": "No historical XML records mapped to this district. May be a post-reorganization district."
+    },
+    {
+      "state": "Odisha",
+      "geojson_district": "Baleshwar",
+      "reason": "No historical XML records mapped to this district. May be a post-reorganization district."
+    },
+    {
+      "state": "Odisha",
+      "geojson_district": "Bargarh",
+      "reason": "No historical XML records mapped to this district. May be a post-reorganization district."
+    },
+    {
+      "state": "Odisha",
+      "geojson_district": "Bhadrak",
+      "reason": "No historical XML records mapped to this district. May be a post-reorganization district."
+    },
+    {
+      "state": "Odisha",
+      "geojson_district": "Boudh",
+      "reason": "No historical XML records mapped to this district. May be a post-reorganization district."
+    },
+    {
+      "state": "Odisha",
+      "geojson_district": "Cuttack",
+      "reason": "No historical XML records mapped to this district. May be a post-reorganization district."
+    },
+    {
+      "state": "Odisha",
+      "geojson_district": "Deogarh",
+      "reason": "No historical XML records mapped to this district. May be a post-reorganization district."
+    },
+    {
+      "state": "Odisha",
+      "geojson_district": "Dhenkanal",
+      "reason": "No historical XML records mapped to this district. May be a post-reorganization district."
+    },
+    {
+      "state": "Odisha",
+      "geojson_district": "Gajapati",
+      "reason": "No historical XML records mapped to this district. May be a post-reorganization district."
+    },
+    {
+      "state": "Odisha",
+      "geojson_district": "Ganjam",
+      "reason": "No historical XML records mapped to this district. May be a post-reorganization district."
+    },
+    {
+      "state": "Odisha",
+      "geojson_district": "Jagatsinghapur",
+      "reason": "No historical XML records mapped to this district. May be a post-reorganization district."
+    },
+    {
+      "state": "Odisha",
+      "geojson_district": "Jajapur",
+      "reason": "No historical XML records mapped to this district. May be a post-reorganization district."
+    },
+    {
+      "state": "Odisha",
+      "geojson_district": "Jharsuguda",
+      "reason": "No historical XML records mapped to this district. May be a post-reorganization district."
+    },
+    {
+      "state": "Odisha",
+      "geojson_district": "Kalahandi",
+      "reason": "No historical XML records mapped to this district. May be a post-reorganization district."
+    },
+    {
+      "state": "Odisha",
+      "geojson_district": "Kandhamal",
+      "reason": "No historical XML records mapped to this district. May be a post-reorganization district."
+    },
+    {
+      "state": "Odisha",
+      "geojson_district": "Kendrapara",
+      "reason": "No historical XML records mapped to this district. May be a post-reorganization district."
+    },
+    {
+      "state": "Odisha",
+      "geojson_district": "Kendujhar",
+      "reason": "No historical XML records mapped to this district. May be a post-reorganization district."
+    },
+    {
+      "state": "Odisha",
+      "geojson_district": "Khordha",
+      "reason": "No historical XML records mapped to this district. May be a post-reorganization district."
+    },
+    {
+      "state": "Odisha",
+      "geojson_district": "Koraput",
+      "reason": "No historical XML records mapped to this district. May be a post-reorganization district."
+    },
+    {
+      "state": "Odisha",
+      "geojson_district": "Malkangiri",
+      "reason": "No historical XML records mapped to this district. May be a post-reorganization district."
+    },
+    {
+      "state": "Odisha",
+      "geojson_district": "Mayurbhanj",
+      "reason": "No historical XML records mapped to this district. May be a post-reorganization district."
+    },
+    {
+      "state": "Odisha",
+      "geojson_district": "Nabarangpur",
+      "reason": "No historical XML records mapped to this district. May be a post-reorganization district."
+    },
+    {
+      "state": "Odisha",
+      "geojson_district": "Nayagarh",
+      "reason": "No historical XML records mapped to this district. May be a post-reorganization district."
+    },
+    {
+      "state": "Odisha",
+      "geojson_district": "Nuapada",
+      "reason": "No historical XML records mapped to this district. May be a post-reorganization district."
+    },
+    {
+      "state": "Odisha",
+      "geojson_district": "Puri",
+      "reason": "No historical XML records mapped to this district. May be a post-reorganization district."
+    },
+    {
+      "state": "Odisha",
+      "geojson_district": "Rayagada",
+      "reason": "No historical XML records mapped to this district. May be a post-reorganization district."
+    },
+    {
+      "state": "Odisha",
+      "geojson_district": "Sambalpur",
+      "reason": "No historical XML records mapped to this district. May be a post-reorganization district."
+    },
+    {
+      "state": "Odisha",
+      "geojson_district": "Sonepur",
+      "reason": "No historical XML records mapped to this district. May be a post-reorganization district."
+    },
+    {
+      "state": "Odisha",
+      "geojson_district": "Sundargarh",
+      "reason": "No historical XML records mapped to this district. May be a post-reorganization district."
+    },
+    {
+      "state": "Tamil Nadu",
+      "geojson_district": "Ariyalur",
+      "reason": "No historical XML records mapped to this district. May be a post-reorganization district."
+    },
+    {
+      "state": "Tamil Nadu",
+      "geojson_district": "Chengalpattu",
+      "reason": "No historical XML records mapped to this district. May be a post-reorganization district."
+    },
+    {
+      "state": "Tamil Nadu",
+      "geojson_district": "Chennai",
+      "reason": "No historical XML records mapped to this district. May be a post-reorganization district."
+    },
+    {
+      "state": "Tamil Nadu",
+      "geojson_district": "Coimbatore",
+      "reason": "No historical XML records mapped to this district. May be a post-reorganization district."
+    },
+    {
+      "state": "Tamil Nadu",
+      "geojson_district": "Cuddalore",
+      "reason": "No historical XML records mapped to this district. May be a post-reorganization district."
+    },
+    {
+      "state": "Tamil Nadu",
+      "geojson_district": "Dharmapuri",
+      "reason": "No historical XML records mapped to this district. May be a post-reorganization district."
+    },
+    {
+      "state": "Tamil Nadu",
+      "geojson_district": "Dindigul",
+      "reason": "No historical XML records mapped to this district. May be a post-reorganization district."
+    },
+    {
+      "state": "Tamil Nadu",
+      "geojson_district": "Erode",
+      "reason": "No historical XML records mapped to this district. May be a post-reorganization district."
+    },
+    {
+      "state": "Tamil Nadu",
+      "geojson_district": "Kallakurichi",
+      "reason": "No historical XML records mapped to this district. May be a post-reorganization district."
+    },
+    {
+      "state": "Tamil Nadu",
+      "geojson_district": "Kanchipuram",
+      "reason": "No historical XML records mapped to this district. May be a post-reorganization district."
+    },
+    {
+      "state": "Tamil Nadu",
+      "geojson_district": "Kanniyakumari",
+      "reason": "No historical XML records mapped to this district. May be a post-reorganization district."
+    },
+    {
+      "state": "Tamil Nadu",
+      "geojson_district": "Karur",
+      "reason": "No historical XML records mapped to this district. May be a post-reorganization district."
+    },
+    {
+      "state": "Tamil Nadu",
+      "geojson_district": "Krishnagiri",
+      "reason": "No historical XML records mapped to this district. May be a post-reorganization district."
+    },
+    {
+      "state": "Tamil Nadu",
+      "geojson_district": "Madurai",
+      "reason": "No historical XML records mapped to this district. May be a post-reorganization district."
+    },
+    {
+      "state": "Tamil Nadu",
+      "geojson_district": "Nagapattinam",
+      "reason": "No historical XML records mapped to this district. May be a post-reorganization district."
+    },
+    {
+      "state": "Tamil Nadu",
+      "geojson_district": "Namakkal",
+      "reason": "No historical XML records mapped to this district. May be a post-reorganization district."
+    },
+    {
+      "state": "Tamil Nadu",
+      "geojson_district": "Perambalur",
+      "reason": "No historical XML records mapped to this district. May be a post-reorganization district."
+    },
+    {
+      "state": "Tamil Nadu",
+      "geojson_district": "Pudukkottai",
+      "reason": "No historical XML records mapped to this district. May be a post-reorganization district."
+    },
+    {
+      "state": "Tamil Nadu",
+      "geojson_district": "Ramanathapuram",
+      "reason": "No historical XML records mapped to this district. May be a post-reorganization district."
+    },
+    {
+      "state": "Tamil Nadu",
+      "geojson_district": "Ranipet",
+      "reason": "No historical XML records mapped to this district. May be a post-reorganization district."
+    },
+    {
+      "state": "Tamil Nadu",
+      "geojson_district": "Salem",
+      "reason": "No historical XML records mapped to this district. May be a post-reorganization district."
+    },
+    {
+      "state": "Tamil Nadu",
+      "geojson_district": "Sivaganga",
+      "reason": "No historical XML records mapped to this district. May be a post-reorganization district."
+    },
+    {
+      "state": "Tamil Nadu",
+      "geojson_district": "Tenkasi",
+      "reason": "No historical XML records mapped to this district. May be a post-reorganization district."
+    },
+    {
+      "state": "Tamil Nadu",
+      "geojson_district": "Thanjavur",
+      "reason": "No historical XML records mapped to this district. May be a post-reorganization district."
+    },
+    {
+      "state": "Tamil Nadu",
+      "geojson_district": "The Nilgiris",
+      "reason": "No historical XML records mapped to this district. May be a post-reorganization district."
+    },
+    {
+      "state": "Tamil Nadu",
+      "geojson_district": "Theni",
+      "reason": "No historical XML records mapped to this district. May be a post-reorganization district."
+    },
+    {
+      "state": "Tamil Nadu",
+      "geojson_district": "Thiruvallur",
+      "reason": "No historical XML records mapped to this district. May be a post-reorganization district."
+    },
+    {
+      "state": "Tamil Nadu",
+      "geojson_district": "Thiruvarur",
+      "reason": "No historical XML records mapped to this district. May be a post-reorganization district."
+    },
+    {
+      "state": "Tamil Nadu",
+      "geojson_district": "Tiruchirappalli",
+      "reason": "No historical XML records mapped to this district. May be a post-reorganization district."
+    },
+    {
+      "state": "Tamil Nadu",
+      "geojson_district": "Tirunelveli",
+      "reason": "No historical XML records mapped to this district. May be a post-reorganization district."
+    },
+    {
+      "state": "Tamil Nadu",
+      "geojson_district": "Tirupathur",
+      "reason": "No historical XML records mapped to this district. May be a post-reorganization district."
+    },
+    {
+      "state": "Tamil Nadu",
+      "geojson_district": "Tiruppur",
+      "reason": "No historical XML records mapped to this district. May be a post-reorganization district."
+    },
+    {
+      "state": "Tamil Nadu",
+      "geojson_district": "Tiruvannamalai",
+      "reason": "No historical XML records mapped to this district. May be a post-reorganization district."
+    },
+    {
+      "state": "Tamil Nadu",
+      "geojson_district": "Tuticorin",
+      "reason": "No historical XML records mapped to this district. May be a post-reorganization district."
+    },
+    {
+      "state": "Tamil Nadu",
+      "geojson_district": "Vellore",
+      "reason": "No historical XML records mapped to this district. May be a post-reorganization district."
+    },
+    {
+      "state": "Tamil Nadu",
+      "geojson_district": "Villupuram",
+      "reason": "No historical XML records mapped to this district. May be a post-reorganization district."
+    },
+    {
+      "state": "Tamil Nadu",
+      "geojson_district": "Virudhunagar",
+      "reason": "No historical XML records mapped to this district. May be a post-reorganization district."
+    },
+    {
+      "state": "Uttarakhand",
+      "geojson_district": "Almora",
+      "reason": "No historical XML records mapped to this district. May be a post-reorganization district."
+    },
+    {
+      "state": "Uttarakhand",
+      "geojson_district": "Bageshwar",
+      "reason": "No historical XML records mapped to this district. May be a post-reorganization district."
+    },
+    {
+      "state": "Uttarakhand",
+      "geojson_district": "Chamoli",
+      "reason": "No historical XML records mapped to this district. May be a post-reorganization district."
+    },
+    {
+      "state": "Uttarakhand",
+      "geojson_district": "Champawat",
+      "reason": "No historical XML records mapped to this district. May be a post-reorganization district."
+    },
+    {
+      "state": "Uttarakhand",
+      "geojson_district": "Dehradun",
+      "reason": "No historical XML records mapped to this district. May be a post-reorganization district."
+    },
+    {
+      "state": "Uttarakhand",
+      "geojson_district": "Haridwar",
+      "reason": "No historical XML records mapped to this district. May be a post-reorganization district."
+    },
+    {
+      "state": "Uttarakhand",
+      "geojson_district": "Nainital",
+      "reason": "No historical XML records mapped to this district. May be a post-reorganization district."
+    },
+    {
+      "state": "Uttarakhand",
+      "geojson_district": "Pauri Garhwal",
+      "reason": "No historical XML records mapped to this district. May be a post-reorganization district."
+    },
+    {
+      "state": "Uttarakhand",
+      "geojson_district": "Pithoragarh",
+      "reason": "No historical XML records mapped to this district. May be a post-reorganization district."
+    },
+    {
+      "state": "Uttarakhand",
+      "geojson_district": "Rudra Prayag",
+      "reason": "No historical XML records mapped to this district. May be a post-reorganization district."
+    },
+    {
+      "state": "Uttarakhand",
+      "geojson_district": "Tehri Garhwal",
+      "reason": "No historical XML records mapped to this district. May be a post-reorganization district."
+    },
+    {
+      "state": "Uttarakhand",
+      "geojson_district": "Udam Singh Nagar",
+      "reason": "No historical XML records mapped to this district. May be a post-reorganization district."
+    },
+    {
+      "state": "Uttarakhand",
+      "geojson_district": "Uttar Kashi",
+      "reason": "No historical XML records mapped to this district. May be a post-reorganization district."
+    }
+  ],
+  "ambiguous_matches": [],
+  "alias_mappings_used": [
+    {
+      "state": "Odisha",
+      "xml_district_key": "angul",
+      "geojson_district": "Anugul"
+    },
+    {
+      "state": "Odisha",
+      "xml_district_key": "balasore",
+      "geojson_district": "Baleshwar"
+    },
+    {
+      "state": "Odisha",
+      "xml_district_key": "bolangir",
+      "geojson_district": "Balangir"
+    },
+    {
+      "state": "Odisha",
+      "xml_district_key": "jagatsingpur",
+      "geojson_district": "Jagatsinghapur"
+    },
+    {
+      "state": "Odisha",
+      "xml_district_key": "jajpur",
+      "geojson_district": "Jajapur"
+    },
+    {
+      "state": "Odisha",
+      "xml_district_key": "keonjhar",
+      "geojson_district": "Kendujhar"
+    },
+    {
+      "state": "Odisha",
+      "xml_district_key": "khurda",
+      "geojson_district": "Khordha"
+    },
+    {
+      "state": "Odisha",
+      "xml_district_key": "nabrangpur",
+      "geojson_district": "Nabarangpur"
+    },
+    {
+      "state": "Odisha",
+      "xml_district_key": "nuapara",
+      "geojson_district": "Nuapada"
+    },
+    {
+      "state": "Tamil Nadu",
+      "xml_district_key": "dindugal",
+      "geojson_district": "Dindigul"
+    },
+    {
+      "state": "Tamil Nadu",
+      "xml_district_key": "nagappattinam",
+      "geojson_district": "Nagapattinam"
+    },
+    {
+      "state": "Tamil Nadu",
+      "xml_district_key": "nilgiri",
+      "geojson_district": "The Nilgiris"
+    },
+    {
+      "state": "Tamil Nadu",
+      "xml_district_key": "nilgiris",
+      "geojson_district": "The Nilgiris"
+    },
+    {
+      "state": "Tamil Nadu",
+      "xml_district_key": "sivagangai",
+      "geojson_district": "Sivaganga"
+    },
+    {
+      "state": "Tamil Nadu",
+      "xml_district_key": "thiruvallur",
+      "geojson_district": "Thiruvallur"
+    },
+    {
+      "state": "Tamil Nadu",
+      "xml_district_key": "thiruvannamalai",
+      "geojson_district": "Tiruvannamalai"
+    },
+    {
+      "state": "Tamil Nadu",
+      "xml_district_key": "thoothukudi",
+      "geojson_district": "Tuticorin"
+    },
+    {
+      "state": "Tamil Nadu",
+      "xml_district_key": "tiruchirappalli",
+      "geojson_district": "Tiruchirappalli"
+    },
+    {
+      "state": "Tamil Nadu",
+      "xml_district_key": "tiruvallur",
+      "geojson_district": "Thiruvallur"
+    },
+    {
+      "state": "Tamil Nadu",
+      "xml_district_key": "trichirappalli",
+      "geojson_district": "Tiruchirappalli"
+    },
+    {
+      "state": "Tamil Nadu",
+      "xml_district_key": "tuticorin",
+      "geojson_district": "Tuticorin"
+    },
+    {
+      "state": "Tamil Nadu",
+      "xml_district_key": "villupuram",
+      "geojson_district": "Villupuram"
+    },
+    {
+      "state": "Tamil Nadu",
+      "xml_district_key": "virudhunagar",
+      "geojson_district": "Virudhunagar"
+    },
+    {
+      "state": "Tamil Nadu",
+      "xml_district_key": "viruthunagar",
+      "geojson_district": "Virudhunagar"
+    },
+    {
+      "state": "Uttarakhand",
+      "xml_district_key": "garhwal",
+      "geojson_district": "Pauri Garhwal"
+    },
+    {
+      "state": "Uttarakhand",
+      "xml_district_key": "hardwar",
+      "geojson_district": "Haridwar"
+    },
+    {
+      "state": "Uttarakhand",
+      "xml_district_key": "pauri",
+      "geojson_district": "Pauri Garhwal"
+    },
+    {
+      "state": "Uttarakhand",
+      "xml_district_key": "rudraprayag",
+      "geojson_district": "Rudra Prayag"
+    },
+    {
+      "state": "Uttarakhand",
+      "xml_district_key": "udam singh nagar",
+      "geojson_district": "Udam Singh Nagar"
+    },
+    {
+      "state": "Uttarakhand",
+      "xml_district_key": "udham singh nagar",
+      "geojson_district": "Udam Singh Nagar"
+    },
+    {
+      "state": "Uttarakhand",
+      "xml_district_key": "uttarkashi",
+      "geojson_district": "Uttar Kashi"
+    }
+  ],
+  "match_counts_by_state": {
+    "Odisha": {
+      "xml_districts": 0,
+      "geojson_districts": 30,
+      "matched_pairs": 0,
+      "unmatched_xml_districts": 0,
+      "unmatched_geojson_districts": 30
+    },
+    "Tamil Nadu": {
+      "xml_districts": 0,
+      "geojson_districts": 37,
+      "matched_pairs": 0,
+      "unmatched_xml_districts": 0,
+      "unmatched_geojson_districts": 37
+    },
+    "Uttarakhand": {
+      "xml_districts": 0,
+      "geojson_districts": 13,
+      "matched_pairs": 0,
+      "unmatched_xml_districts": 0,
+      "unmatched_geojson_districts": 13
+    }
+  },
+  "record_match_summary": {}
+}

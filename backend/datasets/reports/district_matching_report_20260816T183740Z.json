@@ -1,0 +1,682 @@
+{
+  "matched_districts": [
+    {
+      "state": "Odisha",
+      "xml_district": "Angul",
+      "geojson_district": "Anugul",
+      "record_count": 360
+    },
+    {
+      "state": "Odisha",
+      "xml_district": "Balasore",
+      "geojson_district": "Baleshwar",
+      "record_count": 511
+    },
+    {
+      "state": "Odisha",
+      "xml_district": "Bargarh",
+      "geojson_district": "Bargarh",
+      "record_count": 186
+    },
+    {
+      "state": "Odisha",
+      "xml_district": "Bhadrak",
+      "geojson_district": "Bhadrak",
+      "record_count": 470
+    },
+    {
+      "state": "Odisha",
+      "xml_district": "Bolangir",
+      "geojson_district": "Balangir",
+      "record_count": 251
+    },
+    {
+      "state": "Odisha",
+      "xml_district": "Boudh",
+      "geojson_district": "Boudh",
+      "record_count": 184
+    },
+    {
+      "state": "Odisha",
+      "xml_district": "Cuttack",
+      "geojson_district": "Cuttack",
+      "record_count": 1301
+    },
+    {
+      "state": "Odisha",
+      "xml_district": "Deogarh",
+      "geojson_district": "Deogarh",
+      "record_count": 103
+    },
+    {
+      "state": "Odisha",
+      "xml_district": "Dhenkanal",
+      "geojson_district": "Dhenkanal",
+      "record_count": 500
+    },
+    {
+      "state": "Odisha",
+      "xml_district": "Gajapati",
+      "geojson_district": "Gajapati",
+      "record_count": 177
+    },
+    {
+      "state": "Odisha",
+      "xml_district": "Ganjam",
+      "geojson_district": "Ganjam",
+      "record_count": 1075
+    },
+    {
+      "state": "Odisha",
+      "xml_district": "Jagatsingpur",
+      "geojson_district": "Jagatsinghapur",
+      "record_count": 541
+    },
+    {
+      "state": "Odisha",
+      "xml_district": "Jajpur",
+      "geojson_district": "Jajapur",
+      "record_count": 959
+    },
+    {
+      "state": "Odisha",
+      "xml_district": "Jharsuguda",
+      "geojson_district": "Jharsuguda",
+      "record_count": 86
+    },
+    {
+      "state": "Odisha",
+      "xml_district": "Kalahandi",
+      "geojson_district": "Kalahandi",
+      "record_count": 210
+    },
+    {
+      "state": "Odisha",
+      "xml_district": "Kandhamal",
+      "geojson_district": "Kandhamal",
+      "record_count": 229
+    },
+    {
+      "state": "Odisha",
+      "xml_district": "Kendrapara",
+      "geojson_district": "Kendrapara",
+      "record_count": 786
+    },
+    {
+      "state": "Odisha",
+      "xml_district": "Keonjhar",
+      "geojson_district": "Kendujhar",
+      "record_count": 408
+    },
+    {
+      "state": "Odisha",
+      "xml_district": "Khurda",
+      "geojson_district": "Khordha",
+      "record_count": 722
+    },
+    {
+      "state": "Odisha",
+      "xml_district": "Koraput",
+      "geojson_district": "Koraput",
+      "record_count": 345
+    },
+    {
+      "state": "Odisha",
+      "xml_district": "Malkangiri",
+      "geojson_district": "Malkangiri",
+      "record_count": 98
+    },
+    {
+      "state": "Odisha",
+      "xml_district": "Mayurbhanj",
+      "geojson_district": "Mayurbhanj",
+      "record_count": 442
+    },
+    {
+      "state": "Odisha",
+      "xml_district": "Nabrangpur",
+      "geojson_district": "Nabarangpur",
+      "record_count": 98
+    },
+    {
+      "state": "Odisha",
+      "xml_district": "Nayagarh",
+      "geojson_district": "Nayagarh",
+      "record_count": 853
+    },
+    {
+      "state": "Odisha",
+      "xml_district": "Nuapada",
+      "geojson_district": "Nuapada",
+      "record_count": 103
+    },
+    {
+      "state": "Odisha",
+      "xml_district": "Nuapara",
+      "geojson_district": "Nuapada",
+      "record_count": 27
+    },
+    {
+      "state": "Odisha",
+      "xml_district": "Puri",
+      "geojson_district": "Puri",
+      "record_count": 753
+    },
+    {
+      "state": "Odisha",
+      "xml_district": "Rayagada",
+      "geojson_district": "Rayagada",
+      "record_count": 302
+    },
+    {
+      "state": "Odisha",
+      "xml_district": "Sambalpur",
+      "geojson_district": "Sambalpur",
+      "record_count": 251
+    },
+    {
+      "state": "Odisha",
+      "xml_district": "Sonepur",
+      "geojson_district": "Sonepur",
+      "record_count": 224
+    },
+    {
+      "state": "Odisha",
+      "xml_district": "Sundargarh",
+      "geojson_district": "Sundargarh",
+      "record_count": 252
+    },
+    {
+      "state": "Tamil Nadu",
+      "xml_district": "CHENNAI",
+      "geojson_district": "Chennai",
+      "record_count": 622
+    },
+    {
+      "state": "Tamil Nadu",
+      "xml_district": "COIMBATORE",
+      "geojson_district": "Coimbatore",
+      "record_count": 783
+    },
+    {
+      "state": "Tamil Nadu",
+      "xml_district": "CUDDALORE",
+      "geojson_district": "Cuddalore",
+      "record_count": 1212
+    },
+    {
+      "state": "Tamil Nadu",
+      "xml_district": "DHARMAPURI",
+      "geojson_district": "Dharmapuri",
+      "record_count": 285
+    },
+    {
+      "state": "Tamil Nadu",
+      "xml_district": "DINDUGAL",
+      "geojson_district": "Dindigul",
+      "record_count": 326
+    },
+    {
+      "state": "Tamil Nadu",
+      "xml_district": "ERODE",
+      "geojson_district": "Erode",
+      "record_count": 723
+    },
+    {
+      "state": "Tamil Nadu",
+      "xml_district": "KANCHIPURAM",
+      "geojson_district": "Kanchipuram",
+      "record_count": 814
+    },
+    {
+      "state": "Tamil Nadu",
+      "xml_district": "KANNIYAKUMARI",
+      "geojson_district": "Kanniyakumari",
+      "record_count": 763
+    },
+    {
+      "state": "Tamil Nadu",
+      "xml_district": "KARUR",
+      "geojson_district": "Karur",
+      "record_count": 227
+    },
+    {
+      "state": "Tamil Nadu",
+      "xml_district": "KRISHNAGIRI",
+      "geojson_district": "Krishnagiri",
+      "record_count": 75
+    },
+    {
+      "state": "Tamil Nadu",
+      "xml_district": "MADURAI",
+      "geojson_district": "Madurai",
+      "record_count": 350
+    },
+    {
+      "state": "Tamil Nadu",
+      "xml_district": "NAGAPPATTINAM",
+      "geojson_district": "Nagapattinam",
+      "record_count": 210
+    },
+    {
+      "state": "Tamil Nadu",
+      "xml_district": "NAMAKKAL",
+      "geojson_district": "Namakkal",
+      "record_count": 409
+    },
+    {
+      "state": "Tamil Nadu",
+      "xml_district": "NILGIRI",
+      "geojson_district": "The Nilgiris",
+      "record_count": 374
+    },
+    {
+      "state": "Tamil Nadu",
+      "xml_district": "PERAMBALUR",
+      "geojson_district": "Perambalur",
+      "record_count": 449
+    },
+    {
+      "state": "Tamil Nadu",
+      "xml_district": "PUDUKKOTTAI",
+      "geojson_district": "Pudukkottai",
+      "record_count": 668
+    },
+    {
+      "state": "Tamil Nadu",
+      "xml_district": "RAMANATHAPURAM",
+      "geojson_district": "Ramanathapuram",
+      "record_count": 332
+    },
+    {
+      "state": "Tamil Nadu",
+      "xml_district": "SALEM",
+      "geojson_district": "Salem",
+      "record_count": 218
+    },
+    {
+      "state": "Tamil Nadu",
+      "xml_district": "SIVAGANGAI",
+      "geojson_district": "Sivaganga",
+      "record_count": 130
+    },
+    {
+      "state": "Tamil Nadu",
+      "xml_district": "THANJAVUR",
+      "geojson_district": "Thanjavur",
+      "record_count": 583
+    },
+    {
+      "state": "Tamil Nadu",
+      "xml_district": "THENI",
+      "geojson_district": "Theni",
+      "record_count": 920
+    },
+    {
+      "state": "Tamil Nadu",
+      "xml_district": "THIRUVANNAMALAI",
+      "geojson_district": "Tiruvannamalai",
+      "record_count": 422
+    },
+    {
+      "state": "Tamil Nadu",
+      "xml_district": "THIRUVARUR",
+      "geojson_district": "Thiruvarur",
+      "record_count": 66
+    },
+    {
+      "state": "Tamil Nadu",
+      "xml_district": "THOOTHUKUDI",
+      "geojson_district": "Tuticorin",
+      "record_count": 213
+    },
+    {
+      "state": "Tamil Nadu",
+      "xml_district": "TIRUNELVELI",
+      "geojson_district": "Tirunelveli",
+      "record_count": 443
+    },
+    {
+      "state": "Tamil Nadu",
+      "xml_district": "TIRUVALLUR",
+      "geojson_district": "Thiruvallur",
+      "record_count": 1459
+    },
+    {
+      "state": "Tamil Nadu",
+      "xml_district": "TRICHIRAPPALLI",
+      "geojson_district": "Tiruchirappalli",
+      "record_count": 699
+    },
+    {
+      "state": "Tamil Nadu",
+      "xml_district": "VELLORE",
+      "geojson_district": "Vellore",
+      "record_count": 1477
+    },
+    {
+      "state": "Tamil Nadu",
+      "xml_district": "VILLUPPURAM",
+      "geojson_district": "Villupuram",
+      "record_count": 332
+    },
+    {
+      "state": "Tamil Nadu",
+      "xml_district": "VIRUTHUNAGAR",
+      "geojson_district": "Virudhunagar",
+      "record_count": 557
+    },
+    {
+      "state": "Uttarakhand",
+      "xml_district": "Almora",
+      "geojson_district": "Almora",
+      "record_count": 590
+    },
+    {
+      "state": "Uttarakhand",
+      "xml_district": "Bageshwar",
+      "geojson_district": "Bageshwar",
+      "record_count": 383
+    },
+    {
+      "state": "Uttarakhand",
+      "xml_district": "Chamoli",
+      "geojson_district": "Chamoli",
+      "record_count": 221
+    },
+    {
+      "state": "Uttarakhand",
+      "xml_district": "Champawat",
+      "geojson_district": "Champawat",
+      "record_count": 170
+    },
+    {
+      "state": "Uttarakhand",
+      "xml_district": "Dehradun",
+      "geojson_district": "Dehradun",
+      "record_count": 90
+    },
+    {
+      "state": "Uttarakhand",
+      "xml_district": "Garhwal",
+      "geojson_district": "Pauri Garhwal",
+      "record_count": 145
+    },
+    {
+      "state": "Uttarakhand",
+      "xml_district": "Hardwar",
+      "geojson_district": "Haridwar",
+      "record_count": 53
+    },
+    {
+      "state": "Uttarakhand",
+      "xml_district": "Nainital",
+      "geojson_district": "Nainital",
+      "record_count": 610
+    },
+    {
+      "state": "Uttarakhand",
+      "xml_district": "Pauri",
+      "geojson_district": "Pauri Garhwal",
+      "record_count": 29
+    },
+    {
+      "state": "Uttarakhand",
+      "xml_district": "Pithoragarh",
+      "geojson_district": "Pithoragarh",
+      "record_count": 455
+    },
+    {
+      "state": "Uttarakhand",
+      "xml_district": "Rudraprayag",
+      "geojson_district": "Rudra Prayag",
+      "record_count": 120
+    },
+    {
+      "state": "Uttarakhand",
+      "xml_district": "Tehri Garhwal",
+      "geojson_district": "Tehri Garhwal",
+      "record_count": 351
+    },
+    {
+      "state": "Uttarakhand",
+      "xml_district": "Udham Singh Nagar",
+      "geojson_district": "Udam Singh Nagar",
+      "record_count": 581
+    },
+    {
+      "state": "Uttarakhand",
+      "xml_district": "Uttarkashi",
+      "geojson_district": "Uttar Kashi",
+      "record_count": 144
+    }
+  ],
+  "unmatched_historical_districts": [],
+  "unmatched_geojson_districts": [
+    {
+      "state": "Tamil Nadu",
+      "geojson_district": "Ariyalur",
+      "reason": "No historical XML records mapped to this district. May be a post-reorganization district."
+    },
+    {
+      "state": "Tamil Nadu",
+      "geojson_district": "Chengalpattu",
+      "reason": "No historical XML records mapped to this district. May be a post-reorganization district."
+    },
+    {
+      "state": "Tamil Nadu",
+      "geojson_district": "Kallakurichi",
+      "reason": "No historical XML records mapped to this district. May be a post-reorganization district."
+    },
+    {
+      "state": "Tamil Nadu",
+      "geojson_district": "Ranipet",
+      "reason": "No historical XML records mapped to this district. May be a post-reorganization district."
+    },
+    {
+      "state": "Tamil Nadu",
+      "geojson_district": "Tenkasi",
+      "reason": "No historical XML records mapped to this district. May be a post-reorganization district."
+    },
+    {
+      "state": "Tamil Nadu",
+      "geojson_district": "Tirupathur",
+      "reason": "No historical XML records mapped to this district. May be a post-reorganization district."
+    },
+    {
+      "state": "Tamil Nadu",
+      "geojson_district": "Tiruppur",
+      "reason": "No historical XML records mapped to this district. May be a post-reorganization district."
+    }
+  ],
+  "ambiguous_matches": [],
+  "alias_mappings_used": [
+    {
+      "state": "Odisha",
+      "xml_district_key": "angul",
+      "geojson_district": "Anugul"
+    },
+    {
+      "state": "Odisha",
+      "xml_district_key": "balasore",
+      "geojson_district": "Baleshwar"
+    },
+    {
+      "state": "Odisha",
+      "xml_district_key": "bolangir",
+      "geojson_district": "Balangir"
+    },
+    {
+      "state": "Odisha",
+      "xml_district_key": "jagatsingpur",
+      "geojson_district": "Jagatsinghapur"
+    },
+    {
+      "state": "Odisha",
+      "xml_district_key": "jajpur",
+      "geojson_district": "Jajapur"
+    },
+    {
+      "state": "Odisha",
+      "xml_district_key": "keonjhar",
+      "geojson_district": "Kendujhar"
+    },
+    {
+      "state": "Odisha",
+      "xml_district_key": "khurda",
+      "geojson_district": "Khordha"
+    },
+    {
+      "state": "Odisha",
+      "xml_district_key": "nabrangpur",
+      "geojson_district": "Nabarangpur"
+    },
+    {
+      "state": "Odisha",
+      "xml_district_key": "nuapara",
+      "geojson_district": "Nuapada"
+    },
+    {
+      "state": "Tamil Nadu",
+      "xml_district_key": "dindugal",
+      "geojson_district": "Dindigul"
+    },
+    {
+      "state": "Tamil Nadu",
+      "xml_district_key": "nagappattinam",
+      "geojson_district": "Nagapattinam"
+    },
+    {
+      "state": "Tamil Nadu",
+      "xml_district_key": "nilgiri",
+      "geojson_district": "The Nilgiris"
+    },
+    {
+      "state": "Tamil Nadu",
+      "xml_district_key": "nilgiris",
+      "geojson_district": "The Nilgiris"
+    },
+    {
+      "state": "Tamil Nadu",
+      "xml_district_key": "sivagangai",
+      "geojson_district": "Sivaganga"
+    },
+    {
+      "state": "Tamil Nadu",
+      "xml_district_key": "thiruvallur",
+      "geojson_district": "Thiruvallur"
+    },
+    {
+      "state": "Tamil Nadu",
+      "xml_district_key": "thiruvannamalai",
+      "geojson_district": "Tiruvannamalai"
+    },
+    {
+      "state": "Tamil Nadu",
+      "xml_district_key": "thoothukudi",
+      "geojson_district": "Tuticorin"
+    },
+    {
+      "state": "Tamil Nadu",
+      "xml_district_key": "tiruchirappalli",
+      "geojson_district": "Tiruchirappalli"
+    },
+    {
+      "state": "Tamil Nadu",
+      "xml_district_key": "tiruvallur",
+      "geojson_district": "Thiruvallur"
+    },
+    {
+      "state": "Tamil Nadu",
+      "xml_district_key": "trichirappalli",
+      "geojson_district": "Tiruchirappalli"
+    },
+    {
+      "state": "Tamil Nadu",
+      "xml_district_key": "tuticorin",
+      "geojson_district": "Tuticorin"
+    },
+    {
+      "state": "Tamil Nadu",
+      "xml_district_key": "villuppuram",
+      "geojson_district": "Villupuram"
+    },
+    {
+      "state": "Tamil Nadu",
+      "xml_district_key": "villupuram",
+      "geojson_district": "Villupuram"
+    },
+    {
+      "state": "Tamil Nadu",
+      "xml_district_key": "virudhunagar",
+      "geojson_district": "Virudhunagar"
+    },
+    {
+      "state": "Tamil Nadu",
+      "xml_district_key": "viruthunagar",
+      "geojson_district": "Virudhunagar"
+    },
+    {
+      "state": "Uttarakhand",
+      "xml_district_key": "garhwal",
+      "geojson_district": "Pauri Garhwal"
+    },
+    {
+      "state": "Uttarakhand",
+      "xml_district_key": "hardwar",
+      "geojson_district": "Haridwar"
+    },
+    {
+      "state": "Uttarakhand",
+      "xml_district_key": "pauri",
+      "geojson_district": "Pauri Garhwal"
+    },
+    {
+      "state": "Uttarakhand",
+      "xml_district_key": "rudraprayag",
+      "geojson_district": "Rudra Prayag"
+    },
+    {
+      "state": "Uttarakhand",
+      "xml_district_key": "udam singh nagar",
+      "geojson_district": "Udam Singh Nagar"
+    },
+    {
+      "state": "Uttarakhand",
+      "xml_district_key": "udham singh nagar",
+      "geojson_district": "Udam Singh Nagar"
+    },
+    {
+      "state": "Uttarakhand",
+      "xml_district_key": "uttarkashi",
+      "geojson_district": "Uttar Kashi"
+    }
+  ],
+  "match_counts_by_state": {
+    "Uttarakhand": {
+      "xml_districts": 14,
+      "geojson_districts": 13,
+      "matched_pairs": 14,
+      "unmatched_xml_districts": 0,
+      "unmatched_geojson_districts": 0
+    },
+    "Tamil Nadu": {
+      "xml_districts": 30,
+      "geojson_districts": 37,
+      "matched_pairs": 30,
+      "unmatched_xml_districts": 0,
+      "unmatched_geojson_districts": 7
+    },
+    "Odisha": {
+      "xml_districts": 31,
+      "geojson_districts": 30,
+      "matched_pairs": 31,
+      "unmatched_xml_districts": 0,
+      "unmatched_geojson_districts": 0
+    }
+  },
+  "record_match_summary": {
+    "case_insensitive": 23219,
+    "alias": 9671
+  }
+}

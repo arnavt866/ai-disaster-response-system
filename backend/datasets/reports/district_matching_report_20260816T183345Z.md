@@ -1,0 +1,126 @@
+# District Matching Report (Phase B1)
+
+Generated: 20260816T183345Z
+
+## Summary
+- Total records: 33032
+- Matched district pairs: 0
+- Unmatched historical districts: 0
+- Unmatched GeoJSON districts: 80
+
+## Alias Mappings Used
+- Odisha: `angul` → `Anugul`
+- Odisha: `balasore` → `Baleshwar`
+- Odisha: `bolangir` → `Balangir`
+- Odisha: `jagatsingpur` → `Jagatsinghapur`
+- Odisha: `jajpur` → `Jajapur`
+- Odisha: `keonjhar` → `Kendujhar`
+- Odisha: `khurda` → `Khordha`
+- Odisha: `nabrangpur` → `Nabarangpur`
+- Odisha: `nuapara` → `Nuapada`
+- Tamil Nadu: `dindugal` → `Dindigul`
+- Tamil Nadu: `nagappattinam` → `Nagapattinam`
+- Tamil Nadu: `nilgiri` → `The Nilgiris`
+- Tamil Nadu: `nilgiris` → `The Nilgiris`
+- Tamil Nadu: `sivagangai` → `Sivaganga`
+- Tamil Nadu: `thiruvallur` → `Thiruvallur`
+- Tamil Nadu: `thiruvannamalai` → `Tiruvannamalai`
+- Tamil Nadu: `thoothukudi` → `Tuticorin`
+- Tamil Nadu: `tiruchirappalli` → `Tiruchirappalli`
+- Tamil Nadu: `tiruvallur` → `Thiruvallur`
+- Tamil Nadu: `trichirappalli` → `Tiruchirappalli`
+- Tamil Nadu: `tuticorin` → `Tuticorin`
+- Tamil Nadu: `villupuram` → `Villupuram`
+- Tamil Nadu: `virudhunagar` → `Virudhunagar`
+- Tamil Nadu: `viruthunagar` → `Virudhunagar`
+- Uttarakhand: `garhwal` → `Pauri Garhwal`
+- Uttarakhand: `hardwar` → `Haridwar`
+- Uttarakhand: `pauri` → `Pauri Garhwal`
+- Uttarakhand: `rudraprayag` → `Rudra Prayag`
+- Uttarakhand: `udam singh nagar` → `Udam Singh Nagar`
+- Uttarakhand: `udham singh nagar` → `Udam Singh Nagar`
+- Uttarakhand: `uttarkashi` → `Uttar Kashi`
+
+## Unmatched Historical Districts
+
+## Unmatched GeoJSON Districts
+- Odisha / `Anugul`
+- Odisha / `Balangir`
+- Odisha / `Baleshwar`
+- Odisha / `Bargarh`
+- Odisha / `Bhadrak`
+- Odisha / `Boudh`
+- Odisha / `Cuttack`
+- Odisha / `Deogarh`
+- Odisha / `Dhenkanal`
+- Odisha / `Gajapati`
+- Odisha / `Ganjam`
+- Odisha / `Jagatsinghapur`
+- Odisha / `Jajapur`
+- Odisha / `Jharsuguda`
+- Odisha / `Kalahandi`
+- Odisha / `Kandhamal`
+- Odisha / `Kendrapara`
+- Odisha / `Kendujhar`
+- Odisha / `Khordha`
+- Odisha / `Koraput`
+- Odisha / `Malkangiri`
+- Odisha / `Mayurbhanj`
+- Odisha / `Nabarangpur`
+- Odisha / `Nayagarh`
+- Odisha / `Nuapada`
+- Odisha / `Puri`
+- Odisha / `Rayagada`
+- Odisha / `Sambalpur`
+- Odisha / `Sonepur`
+- Odisha / `Sundargarh`
+- Tamil Nadu / `Ariyalur`
+- Tamil Nadu / `Chengalpattu`
+- Tamil Nadu / `Chennai`
+- Tamil Nadu / `Coimbatore`
+- Tamil Nadu / `Cuddalore`
+- Tamil Nadu / `Dharmapuri`
+- Tamil Nadu / `Dindigul`
+- Tamil Nadu / `Erode`
+- Tamil Nadu / `Kallakurichi`
+- Tamil Nadu / `Kanchipuram`
+- Tamil Nadu / `Kanniyakumari`
+- Tamil Nadu / `Karur`
+- Tamil Nadu / `Krishnagiri`
+- Tamil Nadu / `Madurai`
+- Tamil Nadu / `Nagapattinam`
+- Tamil Nadu / `Namakkal`
+- Tamil Nadu / `Perambalur`
+- Tamil Nadu / `Pudukkottai`
+- Tamil Nadu / `Ramanathapuram`
+- Tamil Nadu / `Ranipet`
+- Tamil Nadu / `Salem`
+- Tamil Nadu / `Sivaganga`
+- Tamil Nadu / `Tenkasi`
+- Tamil Nadu / `Thanjavur`
+- Tamil Nadu / `The Nilgiris`
+- Tamil Nadu / `Theni`
+- Tamil Nadu / `Thiruvallur`
+- Tamil Nadu / `Thiruvarur`
+- Tamil Nadu / `Tiruchirappalli`
+- Tamil Nadu / `Tirunelveli`
+- Tamil Nadu / `Tirupathur`
+- Tamil Nadu / `Tiruppur`
+- Tamil Nadu / `Tiruvannamalai`
+- Tamil Nadu / `Tuticorin`
+- Tamil Nadu / `Vellore`
+- Tamil Nadu / `Villupuram`
+- Tamil Nadu / `Virudhunagar`
+- Uttarakhand / `Almora`
+- Uttarakhand / `Bageshwar`
+- Uttarakhand / `Chamoli`
+- Uttarakhand / `Champawat`
+- Uttarakhand / `Dehradun`
+- Uttarakhand / `Haridwar`
+- Uttarakhand / `Nainital`
+- Uttarakhand / `Pauri Garhwal`
+- Uttarakhand / `Pithoragarh`
+- Uttarakhand / `Rudra Prayag`
+- Uttarakhand / `Tehri Garhwal`
+- Uttarakhand / `Udam Singh Nagar`
+- Uttarakhand / `Uttar Kashi`

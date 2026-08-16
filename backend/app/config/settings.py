@@ -24,6 +24,29 @@ NDMA_URL = os.getenv(
     "",
 )
 
+NDMA_PORTAL_URL = os.getenv(
+    "NDMA_PORTAL_URL",
+    "https://sachet.ndma.gov.in/",
+)
+
+OVERPASS_URL = os.getenv(
+    "OVERPASS_URL",
+    "https://overpass.openstreetmap.ru/api/interpreter",
+)
+
+SENTINEL_STAC_URL = os.getenv(
+    "SENTINEL_STAC_URL",
+    "https://earth-search.aws.element84.com/v1",
+)
+
+SENTINEL_STAC_COLLECTION = os.getenv(
+    "SENTINEL_STAC_COLLECTION",
+    "sentinel-2-l2a",
+)
+
+HTTP_CONNECT_TIMEOUT = float(os.getenv("HTTP_CONNECT_TIMEOUT", "10"))
+HTTP_READ_TIMEOUT = float(os.getenv("HTTP_READ_TIMEOUT", "20"))
+
 DATABASE_URL = os.getenv("DATABASE_URL")
 
 # ======================================================
@@ -45,6 +68,18 @@ DATASET_DIR = PROJECT_ROOT / "datasets"
 OSM_FILE = DATA_DIR / "osm" / "india-latest.osm.pbf"
 
 POPULATION_RASTER = DATA_DIR / "population" / "india_population.tif"
+
+NWIC_DISTRICTS_GEOJSON = DATA_DIR / "district_nwic.GeoJSON"
+
+TARGET_DISTRICTS_GEOJSON = DATA_DIR / "district_target_states.geojson"
+
+HISTORICAL_XML_PATHS = {
+    "Odisha": DATA_DIR / "orissa" / "DI_export_019" / "DI_export_019.xml",
+    "Tamil Nadu": DATA_DIR / "tamil_nadu" / "DI_export_033" / "DI_export_033.xml",
+    "Uttarakhand": DATA_DIR / "uttarakhand" / "DI_export_005" / "DI_export_005.xml",
+}
+
+REPORTS_DIR = DATASET_DIR / "reports"
 
 # ======================================================
 # IMPORT SETTINGS

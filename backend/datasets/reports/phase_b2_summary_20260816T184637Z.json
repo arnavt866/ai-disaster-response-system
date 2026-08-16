@@ -1,0 +1,265 @@
+{
+  "matching_summary": {
+    "total_geojson_districts": 80,
+    "unique_geojson_districts_with_historical_data": 73,
+    "unique_geojson_districts_without_historical_data": 7,
+    "unique_historical_xml_district_names": 75,
+    "xml_to_geo_mapping_pair_count": 75,
+    "matched_historical_xml_district_names": 75,
+    "unmatched_historical_xml_district_names": 0,
+    "matched_records": 32890,
+    "unmatched_records": 142,
+    "reconciliation_check": "73 + 7 = 80",
+    "reconciliation_check_passed": true,
+    "counting_note": "xml_to_geo_mapping_pair_count can exceed unique_geojson_districts_with_historical_data when multiple historical XML district spellings map to the same GeoJSON district."
+  },
+  "target_config": {
+    "target_method": "impact_based_proxy_v1",
+    "target_is_observed": false,
+    "version": "1.0.0",
+    "methodology_description": "Historical observed resource-demand labels were unavailable. Resource-demand targets are deterministic impact-based proxies constructed from available disaster-impact variables and are intended for prototype/model-comparison purposes.",
+    "assumptions": {
+      "relief_population": "Uses max(affected_population, evacuated_population) to avoid double-counting when evacuated people are typically a subset of affected people. If both are zero, falls back to affected_families * assumed_persons_per_family.",
+      "food_packets_per_person": "Assumes 1 proxy food-supply packet per person in the relief population for one relief distribution period. This is a modelling assumption, not observed consumption.",
+      "water_units_per_person": "Assumes 3 proxy water-supply units per person in the relief population. Units are abstract supply units, not litres, unless explicitly converted in a future configuration revision.",
+      "medical_kits_per_injury": "Each reported injury contributes 0.5 proxy medical-kit demand units on average, reflecting that not every injury requires a full kit.",
+      "medical_population_rate": "A small baseline medical-kit demand proportional to relief population (2% of relief population) captures routine medical needs beyond recorded injuries.",
+      "death_severity_indicator_weight": "Deaths add a small severity multiplier (0.001 per death) to medical demand to reflect crisis intensity without treating deaths as surviving patients.",
+      "shelter_per_destroyed_house": "Assumes 1 proxy shelter space per destroyed house (household-level assumption documented, not observed occupancy).",
+      "shelter_per_damaged_house": "Assumes 0.25 proxy shelter spaces per damaged house, reflecting partial displacement.",
+      "assumed_persons_per_family": "When only family counts are available, assumes 4 persons per affected family for population fallback."
+    },
+    "coefficients": {
+      "assumed_persons_per_family": 4,
+      "food_packets_per_person": 1.0,
+      "water_units_per_person": 3.0,
+      "medical_kits_per_injury": 0.5,
+      "medical_population_rate": 0.02,
+      "death_severity_indicator_weight": 0.001,
+      "shelter_per_destroyed_house": 1.0,
+      "shelter_per_damaged_house": 0.25
+    },
+    "units": {
+      "food_packets_demand": "proxy food-supply packets (1 packet per relief-population person per relief period)",
+      "water_demand": "proxy water-supply units (3 units per relief-population person; not litres)",
+      "medical_kits_demand": "proxy medical-kit count",
+      "shelter_capacity_demand": "proxy shelter-capacity spaces"
+    },
+    "source_variables": {
+      "food_packets_demand": [
+        "affected_population",
+        "evacuated_population",
+        "affected_families"
+      ],
+      "water_demand": [
+        "affected_population",
+        "evacuated_population",
+        "affected_families"
+      ],
+      "medical_kits_demand": [
+        "injuries",
+        "deaths",
+        "affected_population",
+        "evacuated_population",
+        "affected_families"
+      ],
+      "shelter_capacity_demand": [
+        "evacuated_population",
+        "houses_destroyed",
+        "houses_damaged",
+        "affected_families"
+      ]
+    },
+    "formulas": {
+      "relief_population": "max(affected_population, evacuated_population); if zero and affected_families > 0: affected_families * assumed_persons_per_family",
+      "food_packets_demand": "ceil(relief_population * food_packets_per_person)",
+      "water_demand": "ceil(relief_population * water_units_per_person)",
+      "medical_kits_demand": "ceil((injuries * medical_kits_per_injury + relief_population * medical_population_rate) * (1 + deaths * death_severity_indicator_weight))",
+      "shelter_capacity_demand": "ceil(max(evacuated_population, houses_destroyed * shelter_per_destroyed_house + houses_damaged * shelter_per_damaged_house, affected_families * assumed_persons_per_family if relief_population == 0 else 0))"
+    }
+  },
+  "target_statistics": {
+    "food_packets_demand": {
+      "count": 33032,
+      "min": 0.0,
+      "max": 2867200.0,
+      "mean": 4239.339428433034,
+      "median": 0.0,
+      "std": 61618.30887233099,
+      "percentiles": {
+        "p25": 0.0,
+        "p50": 0.0,
+        "p75": 0.0,
+        "p90": 48.0,
+        "p95": 380.4499999999971,
+        "p99": 55000.0
+      },
+      "zero_count": 26839,
+      "zero_percentage": 81.25,
+      "non_zero_count": 6193,
+      "non_zero_percentage": 18.75
+    },
+    "water_demand": {
+      "count": 33032,
+      "min": 0.0,
+      "max": 8601600.0,
+      "mean": 12718.018285299104,
+      "median": 0.0,
+      "std": 184854.92661699298,
+      "percentiles": {
+        "p25": 0.0,
+        "p50": 0.0,
+        "p75": 0.0,
+        "p90": 144.0,
+        "p95": 1141.3499999999913,
+        "p99": 165000.0
+      },
+      "zero_count": 26839,
+      "zero_percentage": 81.25,
+      "non_zero_count": 6193,
+      "non_zero_percentage": 18.75
+    },
+    "medical_kits_demand": {
+      "count": 33032,
+      "min": 0.0,
+      "max": 65377.0,
+      "mean": 87.71376241220635,
+      "median": 0.0,
+      "std": 1268.5814244943035,
+      "percentiles": {
+        "p25": 0.0,
+        "p50": 0.0,
+        "p75": 1.0,
+        "p90": 4.0,
+        "p95": 14.0,
+        "p99": 1147.1399999999921
+      },
+      "zero_count": 23999,
+      "zero_percentage": 72.65,
+      "non_zero_count": 9033,
+      "non_zero_percentage": 27.35
+    },
+    "shelter_capacity_demand": {
+      "count": 33032,
+      "min": 0.0,
+      "max": 1033950.0,
+      "mean": 223.82044683942843,
+      "median": 1.0,
+      "std": 6761.58225727997,
+      "percentiles": {
+        "p25": 0.0,
+        "p50": 1.0,
+        "p75": 6.0,
+        "p90": 60.0,
+        "p95": 181.0,
+        "p99": 1456.7599999999948
+      },
+      "zero_count": 15683,
+      "zero_percentage": 47.48,
+      "non_zero_count": 17349,
+      "non_zero_percentage": 52.52
+    }
+  },
+  "target_correlations": {
+    "food_packets_demand": {
+      "relief_population_proxy": 1.0,
+      "affected_population": 0.995,
+      "evacuated_population": 0.3123,
+      "affected_families": 0.0924,
+      "injuries": -0.0019,
+      "deaths": 0.0144,
+      "houses_destroyed": 0.1539,
+      "houses_damaged": 0.1986
+    },
+    "water_demand": {
+      "relief_population_proxy": 1.0,
+      "affected_population": 0.995,
+      "evacuated_population": 0.3123,
+      "affected_families": 0.0924,
+      "injuries": -0.0019,
+      "deaths": 0.0144,
+      "houses_destroyed": 0.1539,
+      "houses_damaged": 0.1986
+    },
+    "medical_kits_demand": {
+      "relief_population_proxy": 0.9965,
+      "affected_population": 0.9917,
+      "evacuated_population": 0.3055,
+      "affected_families": 0.0907,
+      "injuries": 0.0259,
+      "deaths": 0.0187,
+      "houses_destroyed": 0.1564,
+      "houses_damaged": 0.201
+    },
+    "shelter_capacity_demand": {
+      "relief_population_proxy": 0.3321,
+      "affected_population": 0.3332,
+      "evacuated_population": 0.949,
+      "affected_families": 0.0163,
+      "injuries": 0.0014,
+      "deaths": 0.0091,
+      "houses_destroyed": 0.4774,
+      "houses_damaged": 0.283
+    }
+  },
+  "target_validation": {
+    "valid": true,
+    "issues": []
+  },
+  "dataset_shape": {
+    "rows": 33032,
+    "columns": 40
+  },
+  "feature_columns": [
+    "disaster_type_normalized",
+    "event_year",
+    "event_month",
+    "state_normalized",
+    "district_normalized",
+    "deaths",
+    "injuries",
+    "missing_persons",
+    "affected_population",
+    "evacuated_population",
+    "houses_destroyed",
+    "houses_damaged",
+    "affected_families",
+    "relocated_population",
+    "hospitals_affected",
+    "schools_affected",
+    "agricultural_hectares",
+    "livestock_heads",
+    "road_damage_km",
+    "duration_days",
+    "sector_relief",
+    "sector_health",
+    "sector_education",
+    "sector_agriculture",
+    "sector_industry",
+    "sector_water",
+    "sector_sewer",
+    "sector_energy",
+    "sector_communications",
+    "sector_transport"
+  ],
+  "target_columns": [
+    "food_packets_demand",
+    "water_demand",
+    "medical_kits_demand",
+    "shelter_capacity_demand"
+  ],
+  "data_quality_issues": [
+    "7 GeoJSON districts have no matching historical XML records.",
+    "1398 records (4.2%) have unparseable or missing event dates."
+  ],
+  "output_files": {
+    "historical_ml_dataset_csv": "C:\\AI-Based-Disaster-Response-Management-System-for-Resource-Allocation---Relief-Coordination-July-2026\\backend\\datasets\\historical_ml_dataset.csv",
+    "feature_schema_json": "C:\\AI-Based-Disaster-Response-Management-System-for-Resource-Allocation---Relief-Coordination-July-2026\\backend\\datasets\\historical_ml_feature_schema.json",
+    "proxy_target_statistics_json": "C:\\AI-Based-Disaster-Response-Management-System-for-Resource-Allocation---Relief-Coordination-July-2026\\backend\\datasets\\reports\\proxy_target_statistics_20260816T184637Z.json",
+    "proxy_target_correlations_json": "C:\\AI-Based-Disaster-Response-Management-System-for-Resource-Allocation---Relief-Coordination-July-2026\\backend\\datasets\\reports\\proxy_target_correlations_20260816T184637Z.json",
+    "proxy_target_methodology_md": "C:\\AI-Based-Disaster-Response-Management-System-for-Resource-Allocation---Relief-Coordination-July-2026\\backend\\datasets\\reports\\proxy_target_methodology_20260816T184637Z.md",
+    "phase_b2_summary_json": "C:\\AI-Based-Disaster-Response-Management-System-for-Resource-Allocation---Relief-Coordination-July-2026\\backend\\datasets\\reports\\phase_b2_summary_20260816T184637Z.json",
+    "normalized_csv": "C:\\AI-Based-Disaster-Response-Management-System-for-Resource-Allocation---Relief-Coordination-July-2026\\backend\\datasets\\historical_normalized.csv",
+    "district_matching_report_json": "C:\\AI-Based-Disaster-Response-Management-System-for-Resource-Allocation---Relief-Coordination-July-2026\\backend\\datasets\\reports\\district_matching_report_20260816T184633Z.json"
+  }
+}

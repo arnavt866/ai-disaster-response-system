@@ -1,0 +1,42 @@
+{
+  "food_packets_demand": {
+    "relief_population_proxy": 1.0,
+    "affected_population": 0.995,
+    "evacuated_population": 0.3123,
+    "affected_families": 0.0924,
+    "injuries": -0.0019,
+    "deaths": 0.0144,
+    "houses_destroyed": 0.1539,
+    "houses_damaged": 0.1986
+  },
+  "water_demand": {
+    "relief_population_proxy": 1.0,
+    "affected_population": 0.995,
+    "evacuated_population": 0.3123,
+    "affected_families": 0.0924,
+    "injuries": -0.0019,
+    "deaths": 0.0144,
+    "houses_destroyed": 0.1539,
+    "houses_damaged": 0.1986
+  },
+  "medical_kits_demand": {
+    "relief_population_proxy": 0.9965,
+    "affected_population": 0.9917,
+    "evacuated_population": 0.3055,
+    "affected_families": 0.0907,
+    "injuries": 0.0259,
+    "deaths": 0.0187,
+    "houses_destroyed": 0.1564,
+    "houses_damaged": 0.201
+  },
+  "shelter_capacity_demand": {
+    "relief_population_proxy": 0.3321,
+    "affected_population": 0.3332,
+    "evacuated_population": 0.949,
+    "affected_families": 0.0163,
+    "injuries": 0.0014,
+    "deaths": 0.0091,
+    "houses_destroyed": 0.4774,
+    "houses_damaged": 0.283
+  }
+}

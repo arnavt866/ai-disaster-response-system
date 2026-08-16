@@ -15,12 +15,8 @@ def estimate_impact_radius(
     alert_level: str | None = None,
 ) -> float:
     """
-    Estimate the approximate impact radius (km)
-    for a disaster event.
-
-    NOTE:
-    This is a heuristic model for Milestone 1.
-    Later satellite imagery will replace this.
+    Estimate impact radius (km) from disaster type and optional magnitude/alert.
+    Heuristic only; satellite damage assessment is not integrated.
     """
 
     disaster_type = disaster_type.upper()

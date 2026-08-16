@@ -1,0 +1,82 @@
+{
+  "food_packets_demand": {
+    "count": 33032,
+    "min": 0.0,
+    "max": 2867200.0,
+    "mean": 4239.339428433034,
+    "median": 0.0,
+    "std": 61618.30887233099,
+    "percentiles": {
+      "p25": 0.0,
+      "p50": 0.0,
+      "p75": 0.0,
+      "p90": 48.0,
+      "p95": 380.4499999999971,
+      "p99": 55000.0
+    },
+    "zero_count": 26839,
+    "zero_percentage": 81.25,
+    "non_zero_count": 6193,
+    "non_zero_percentage": 18.75
+  },
+  "water_demand": {
+    "count": 33032,
+    "min": 0.0,
+    "max": 8601600.0,
+    "mean": 12718.018285299104,
+    "median": 0.0,
+    "std": 184854.92661699298,
+    "percentiles": {
+      "p25": 0.0,
+      "p50": 0.0,
+      "p75": 0.0,
+      "p90": 144.0,
+      "p95": 1141.3499999999913,
+      "p99": 165000.0
+    },
+    "zero_count": 26839,
+    "zero_percentage": 81.25,
+    "non_zero_count": 6193,
+    "non_zero_percentage": 18.75
+  },
+  "medical_kits_demand": {
+    "count": 33032,
+    "min": 0.0,
+    "max": 65377.0,
+    "mean": 87.71376241220635,
+    "median": 0.0,
+    "std": 1268.5814244943035,
+    "percentiles": {
+      "p25": 0.0,
+      "p50": 0.0,
+      "p75": 1.0,
+      "p90": 4.0,
+      "p95": 14.0,
+      "p99": 1147.1399999999921
+    },
+    "zero_count": 23999,
+    "zero_percentage": 72.65,
+    "non_zero_count": 9033,
+    "non_zero_percentage": 27.35
+  },
+  "shelter_capacity_demand": {
+    "count": 33032,
+    "min": 0.0,
+    "max": 1033950.0,
+    "mean": 223.82044683942843,
+    "median": 1.0,
+    "std": 6761.58225727997,
+    "percentiles": {
+      "p25": 0.0,
+      "p50": 1.0,
+      "p75": 6.0,
+      "p90": 60.0,
+      "p95": 181.0,
+      "p99": 1456.7599999999948
+    },
+    "zero_count": 15683,
+    "zero_percentage": 47.48,
+    "non_zero_count": 17349,
+    "non_zero_percentage": 52.52
+  }
+}

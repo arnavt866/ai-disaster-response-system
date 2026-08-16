@@ -62,3 +62,8 @@ htmlcov/
 # Temporary
 
 *.tmp
+
+
+backend/datasets/prediction_history.jsonl
+backend/logs/
+backend/models/

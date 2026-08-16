@@ -1,0 +1,153 @@
+{
+  "target_method": "impact_based_proxy_v1",
+  "target_is_observed": false,
+  "target_version": "1.0.0",
+  "methodology_description": "Historical observed resource-demand labels were unavailable. Resource-demand targets are deterministic impact-based proxies constructed from available disaster-impact variables and are intended for prototype/model-comparison purposes.",
+  "feature_columns": [
+    "disaster_type_normalized",
+    "event_year",
+    "event_month",
+    "state_normalized",
+    "district_normalized",
+    "deaths",
+    "injuries",
+    "missing_persons",
+    "affected_population",
+    "evacuated_population",
+    "houses_destroyed",
+    "houses_damaged",
+    "affected_families",
+    "relocated_population",
+    "hospitals_affected",
+    "schools_affected",
+    "agricultural_hectares",
+    "livestock_heads",
+    "road_damage_km",
+    "duration_days",
+    "sector_relief",
+    "sector_health",
+    "sector_education",
+    "sector_agriculture",
+    "sector_industry",
+    "sector_water",
+    "sector_sewer",
+    "sector_energy",
+    "sector_communications",
+    "sector_transport"
+  ],
+  "target_columns": [
+    "food_packets_demand",
+    "water_demand",
+    "medical_kits_demand",
+    "shelter_capacity_demand"
+  ],
+  "provenance_columns": [
+    "record_id",
+    "source_state",
+    "target_method",
+    "target_is_observed",
+    "target_version",
+    "relief_population_proxy"
+  ],
+  "dataset_columns": [
+    "record_id",
+    "source_state",
+    "target_method",
+    "target_is_observed",
+    "target_version",
+    "relief_population_proxy",
+    "disaster_type_normalized",
+    "event_year",
+    "event_month",
+    "state_normalized",
+    "district_normalized",
+    "deaths",
+    "injuries",
+    "missing_persons",
+    "affected_population",
+    "evacuated_population",
+    "houses_destroyed",
+    "houses_damaged",
+    "affected_families",
+    "relocated_population",
+    "hospitals_affected",
+    "schools_affected",
+    "agricultural_hectares",
+    "livestock_heads",
+    "road_damage_km",
+    "duration_days",
+    "sector_relief",
+    "sector_health",
+    "sector_education",
+    "sector_agriculture",
+    "sector_industry",
+    "sector_water",
+    "sector_sewer",
+    "sector_energy",
+    "sector_communications",
+    "sector_transport",
+    "food_packets_demand",
+    "water_demand",
+    "medical_kits_demand",
+    "shelter_capacity_demand"
+  ],
+  "coefficients": {
+    "assumed_persons_per_family": 4,
+    "food_packets_per_person": 1.0,
+    "water_units_per_person": 3.0,
+    "medical_kits_per_injury": 0.5,
+    "medical_population_rate": 0.02,
+    "death_severity_indicator_weight": 0.001,
+    "shelter_per_destroyed_house": 1.0,
+    "shelter_per_damaged_house": 0.25
+  },
+  "units": {
+    "food_packets_demand": "proxy food-supply packets (1 packet per relief-population person per relief period)",
+    "water_demand": "proxy water-supply units (3 units per relief-population person; not litres)",
+    "medical_kits_demand": "proxy medical-kit count",
+    "shelter_capacity_demand": "proxy shelter-capacity spaces"
+  },
+  "formulas": {
+    "relief_population": "max(affected_population, evacuated_population); if zero and affected_families > 0: affected_families * assumed_persons_per_family",
+    "food_packets_demand": "ceil(relief_population * food_packets_per_person)",
+    "water_demand": "ceil(relief_population * water_units_per_person)",
+    "medical_kits_demand": "ceil((injuries * medical_kits_per_injury + relief_population * medical_population_rate) * (1 + deaths * death_severity_indicator_weight))",
+    "shelter_capacity_demand": "ceil(max(evacuated_population, houses_destroyed * shelter_per_destroyed_house + houses_damaged * shelter_per_damaged_house, affected_families * assumed_persons_per_family if relief_population == 0 else 0))"
+  },
+  "source_variables": {
+    "food_packets_demand": [
+      "affected_population",
+      "evacuated_population",
+      "affected_families"
+    ],
+    "water_demand": [
+      "affected_population",
+      "evacuated_population",
+      "affected_families"
+    ],
+    "medical_kits_demand": [
+      "injuries",
+      "deaths",
+      "affected_population",
+      "evacuated_population",
+      "affected_families"
+    ],
+    "shelter_capacity_demand": [
+      "evacuated_population",
+      "houses_destroyed",
+      "houses_damaged",
+      "affected_families"
+    ]
+  },
+  "assumptions": {
+    "relief_population": "Uses max(affected_population, evacuated_population) to avoid double-counting when evacuated people are typically a subset of affected people. If both are zero, falls back to affected_families * assumed_persons_per_family.",
+    "food_packets_per_person": "Assumes 1 proxy food-supply packet per person in the relief population for one relief distribution period. This is a modelling assumption, not observed consumption.",
+    "water_units_per_person": "Assumes 3 proxy water-supply units per person in the relief population. Units are abstract supply units, not litres, unless explicitly converted in a future configuration revision.",
+    "medical_kits_per_injury": "Each reported injury contributes 0.5 proxy medical-kit demand units on average, reflecting that not every injury requires a full kit.",
+    "medical_population_rate": "A small baseline medical-kit demand proportional to relief population (2% of relief population) captures routine medical needs beyond recorded injuries.",
+    "death_severity_indicator_weight": "Deaths add a small severity multiplier (0.001 per death) to medical demand to reflect crisis intensity without treating deaths as surviving patients.",
+    "shelter_per_destroyed_house": "Assumes 1 proxy shelter space per destroyed house (household-level assumption documented, not observed occupancy).",
+    "shelter_per_damaged_house": "Assumes 0.25 proxy shelter spaces per damaged house, reflecting partial displacement.",
+    "assumed_persons_per_family": "When only family counts are available, assumes 4 persons per affected family for population fallback."
+  }
+}

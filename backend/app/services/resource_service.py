@@ -2,34 +2,14 @@ def calculate_resources(
     population: int,
     severity_level: str,
 ) -> dict:
-    """
-    Estimate the relief resources required for
-    an affected population.
-
-    This rule-based approach will be replaced
-    by an ML model in Milestone 2.
-    """
+    """Rule-based relief resource estimates used by Milestone-1 grid analysis."""
     if population == 0:
-
         return {
-
             "food_packets": 0,
-
             "water_bottles": 0,
-
             "medical_kits": 0,
-
             "temporary_shelters": 0,
-
         }
-    """
-    Estimate relief resources required.
-
-    These values are rule-based for Milestone 1.
-
-    In Milestone 2 they will be replaced
-    by the ML model.
-    """
 
     if severity_level == "Critical":
 
