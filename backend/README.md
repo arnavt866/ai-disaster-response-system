@@ -151,6 +151,4 @@ Completed
 
 ## Authors
 
-Team Members
-
-(Your Names)
+Arnav Thapliyal
