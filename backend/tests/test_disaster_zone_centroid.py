@@ -48,6 +48,8 @@ def test_create_disaster_zones_persists_polygon_centroid():
     expected_lat, expected_lon = polygon_centroid_lat_lon(analyzed_cells[0]["geometry"])
     assert saved_zones[0].latitude == expected_lat
     assert saved_zones[0].longitude == expected_lon
+    assert saved_zones[0].location is not None
+    assert "POINT" in saved_zones[0].location.desc
 
 
 def test_zone_integration_rebuilds_grid_from_persisted_centroid():

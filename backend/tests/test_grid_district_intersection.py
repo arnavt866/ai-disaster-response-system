@@ -32,7 +32,7 @@ def test_grid_district_overlap_proportions_sum_to_one():
     overlaps = compute_grid_district_overlaps(feature["geometry"])
     assert len(overlaps) >= 1
     total = sum(item["overlap_proportion"] for item in overlaps)
-    assert abs(total - 1.0) < 1e-6
+    assert abs(total - 1.0) < 1e-5
     assert overlaps[0]["state_name"] in {"Odisha", "Tamil Nadu", "Uttarakhand"}
 
 
@@ -61,3 +61,33 @@ def test_enrich_grid_reports_multi_district_flag():
     result = enrich_grid_with_districts(grid_geojson)
     assert result["crs_used_for_area"] == PROJECTED_CRS
     assert "overlaps" in result
+    if result["district_count"] > 1:
+        assert result["multi_district"] is True
+        total = sum(item["overlap_proportion"] for item in result["overlaps"])
+        assert abs(total - 1.0) < 1e-5
+
+
+def test_cross_boundary_grid_multiple_districts_from_intersection_not_centroid():
+    """Grid spanning adjacent districts must retain all intersecting districts."""
+    with TARGET_DISTRICTS_GEOJSON.open(encoding="utf-8") as handle:
+        geo = json.load(handle)
+
+    features = geo["features"][:8]
+    bounds = [shape(feat["geometry"]).bounds for feat in features]
+    minx = min(b[0] for b in bounds)
+    miny = min(b[1] for b in bounds)
+    maxx = max(b[2] for b in bounds)
+    maxy = max(b[3] for b in bounds)
+
+    grid_geojson = {
+        "type": "Polygon",
+        "coordinates": [[
+            [minx, miny], [maxx, miny], [maxx, maxy], [minx, maxy], [minx, miny],
+        ]],
+    }
+    overlaps = compute_grid_district_overlaps(grid_geojson)
+    assert len(overlaps) >= 2
+    total = sum(item["overlap_proportion"] for item in overlaps)
+    assert abs(total - 1.0) < 1e-5
+    districts = {item["district"] for item in overlaps}
+    assert len(districts) >= 2

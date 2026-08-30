@@ -4,6 +4,7 @@ from shapely.geometry import shape
 from sqlalchemy.orm import Session
 
 from app.models.disaster_zone import DisasterZone
+from app.services.geospatial.zone_geometry import point_from_lat_lon
 
 
 def polygon_centroid_lat_lon(geometry: dict) -> tuple[float, float]:
@@ -27,8 +28,10 @@ def create_disaster_zones(
             zone_name=f"{disaster_type.upper()}-{timestamp}-Zone-{index}",
             disaster_type=disaster_type,
             severity=cell["severity_level"],
+            operational_priority=cell["severity_level"],
             latitude=latitude,
             longitude=longitude,
+            location=point_from_lat_lon(latitude, longitude),
             affected_population=cell["estimated_population"],
             status="Active",
         )

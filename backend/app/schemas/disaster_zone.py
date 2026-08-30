@@ -11,6 +11,7 @@ class DisasterZoneBase(BaseModel):
 
     affected_population: int = Field(ge=0)
     status: str = "Active"
+    operational_priority: str = "Moderate"
 
 
 class DisasterZoneCreate(DisasterZoneBase):

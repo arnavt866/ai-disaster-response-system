@@ -1,69 +1,113 @@
-# Local datasets
-backend/data/
+# =============================================================================
+# Local data, caches, and generated artifacts (do not push)
+# =============================================================================
 
+backend/data/
+backend/cache/
+backend/logs/
+backend/datasets/
+backend/models/
+
+# ML / prediction runtime logs
+backend/datasets/prediction_history.jsonl
+
+# Road graph build output (generated locally from OSM PBF)
+backend/data/road_graphs/
+
+# =============================================================================
+# Project documentation and explanation notes (local reference only)
+# =============================================================================
+
+PROJECT_STUDENT_GUIDE.md
+backend/docs/
+backend/docs/**
+
+# Dataset analysis / methodology reports
+backend/datasets/reports/
+
+# =============================================================================
+# Dev-only scripts (debug, cleanup, one-off data fixes)
+# =============================================================================
+
+backend/scripts/debug_*.py
+backend/scripts/diagnose_*.py
+backend/scripts/investigate_*.py
+backend/scripts/cleanup_*.py
+backend/scripts/fix_*.py
+backend/scripts/execute_*.py
+backend/scripts/final_cleanup_*.py
+backend/scripts/report_test_data.py
+backend/scripts/check_gdacs_types.py
+backend/scripts/inventory_reconciliation_report.py
+backend/requirements.txt.backup
+
+# =============================================================================
 # Python
+# =============================================================================
 
 __pycache__/
 *.py[cod]
 *$py.class
-
-# Virtual Environment
-
+*.pyo
+.pytest_cache/
+.mypy_cache/
 .venv/
 venv/
 env/
 
-# Environment Variables
+# =============================================================================
+# Environment and secrets
+# =============================================================================
 
 .env
+.env.*
+!.env.example
 
+# =============================================================================
 # Logs
+# =============================================================================
 
 logs/
 *.log
 
-# IDE
+# =============================================================================
+# IDE / OS
+# =============================================================================
 
 .idea/
 .vscode/
-
-# Python cache
-
-.pytest_cache/
-.mypy_cache/
-
-# OS
-
 .DS_Store
 Thumbs.db
 
-# Build
+# =============================================================================
+# Build / coverage
+# =============================================================================
 
 build/
 dist/
+dist-ssr/
+.coverage
+htmlcov/
+*.tmp
 
-# Jupyter
+# =============================================================================
+# Node / frontend
+# =============================================================================
 
-.ipynb_checkpoints/
+node_modules/
+frontend/node_modules/
+frontend/dist/
+frontend/.vite/
+*.local
 
-# Bytecode
-
-*.pyo
-
-# SQLite
+# =============================================================================
+# SQLite (if used locally)
+# =============================================================================
 
 *.sqlite3
 
-# Coverage
+# =============================================================================
+# Jupyter
+# =============================================================================
 
-.coverage
-htmlcov/
-
-# Temporary
-
-*.tmp
-
-
-backend/datasets/prediction_history.jsonl
-backend/logs/
-backend/models/
+.ipynb_checkpoints/

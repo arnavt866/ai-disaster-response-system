@@ -1,12 +1,18 @@
+from geoalchemy2 import Geography
+from geoalchemy2.functions import ST_DWithin
+from sqlalchemy import cast, func
 from sqlalchemy.orm import Session
 
 from app.models.disaster_zone import DisasterZone
 from app.schemas.disaster_zone import DisasterZoneCreate
+from app.services.geospatial.zone_geometry import point_from_lat_lon
+from app.services.relief_service import get_relief_center_by_id
 
 
 def create_zone(db: Session, zone: DisasterZoneCreate) -> DisasterZone:
 
     db_zone = DisasterZone(**zone.model_dump())
+    db_zone.location = point_from_lat_lon(zone.latitude, zone.longitude)
 
     db.add(db_zone)
 
@@ -52,6 +58,10 @@ def update_zone(
     zone.severity = updated_zone.severity
     zone.latitude = updated_zone.latitude
     zone.longitude = updated_zone.longitude
+    zone.location = point_from_lat_lon(
+        updated_zone.latitude,
+        updated_zone.longitude,
+    )
     zone.affected_population = updated_zone.affected_population
     zone.status = updated_zone.status
 
@@ -80,3 +90,34 @@ def delete_zone(
     db.commit()
 
     return zone
+
+
+def get_zones_near_depot(
+    db: Session,
+    relief_center_id: int,
+    radius_km: float,
+) -> list[DisasterZone] | None:
+    """
+    Return disaster zones within radius_km of a relief center depot.
+
+    Uses PostGIS ST_DWithin on geography casts for meter-accurate distance.
+    Optional capability — does not affect existing allocation logic.
+    """
+    depot = get_relief_center_by_id(db, relief_center_id)
+    if depot is None:
+        return None
+
+    radius_m = radius_km * 1000.0
+    depot_point = func.ST_SetSRID(
+        func.ST_MakePoint(depot.longitude, depot.latitude),
+        4326,
+    )
+    depot_geography = cast(depot_point, Geography)
+    zone_geography = cast(DisasterZone.location, Geography)
+
+    return (
+        db.query(DisasterZone)
+        .filter(DisasterZone.location.isnot(None))
+        .filter(ST_DWithin(zone_geography, depot_geography, radius_m))
+        .all()
+    )

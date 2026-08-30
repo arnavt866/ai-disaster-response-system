@@ -1,6 +1,11 @@
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 
 # API routers
+from app.api.allocation_routes import router as allocation_router
+from app.api.analytics_routes import router as analytics_router
+from app.api.field_team_routes import router as field_team_router
+from app.api.mission_routes import router as mission_router
 from app.api.building_routes import router as building_router
 from app.api.disaster_routes import router as disaster_router
 from app.api.gdacs_routes import router as gdacs_router
@@ -23,8 +28,20 @@ app = FastAPI(
     ),
 )
 
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 # API Routes
 
+app.include_router(allocation_router)
+app.include_router(analytics_router)
+app.include_router(field_team_router)
+app.include_router(mission_router)
 app.include_router(building_router)
 app.include_router(disaster_router)
 app.include_router(gdacs_router)

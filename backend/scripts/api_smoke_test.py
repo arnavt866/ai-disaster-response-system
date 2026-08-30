@@ -1,4 +1,4 @@
-"""Lightweight API smoke tests for Milestone-2 audit."""
+"""Lightweight API smoke tests for M1 and M2 endpoints."""
 
 from fastapi.testclient import TestClient
 
@@ -17,6 +17,13 @@ def check(name, method, path, **kwargs):
     return response
 
 
+# M1
+check("health", "get", "/")
+check("ndma", "get", "/ndma/")
+check("grid_generate_validation", "get", "/grid/generate")
+check("impact_estimate_validation", "get", "/impact/estimate")
+
+# M2
 check("model", "get", "/prediction/model")
 check("evaluation", "get", "/prediction/evaluation")
 check("history", "get", "/prediction/history")
