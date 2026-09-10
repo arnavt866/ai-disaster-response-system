@@ -2,44 +2,110 @@
 
 @custom-variant dark (&:where(.dark, .dark *));
 
+/* ---------------------------------------------------------------------------
+   Design tokens.
+
+   `--severity-*` and `--accent` are the fixed brand hues and are used for
+   fills, markers, chart bars and chips (>=3:1 UI contrast).
+   `--*-text` variants exist because the fixed hues do not reach 4.5:1 against
+   white; light mode substitutes a darker same-hue value for text only.
+   --------------------------------------------------------------------------- */
+
+/* Light mode. */
 :root {
-  --bg: #f1f5f9;
+  --bg: #f7f8fa;
   --surface: #ffffff;
-  --surface-elevated: #f8fafc;
-  --surface-hover: #e2e8f0;
-  --border: #cbd5e1;
+  --surface-elevated: #f1f3f6;
+  --surface-hover: #e9edf2;
+  --border: #e2e8f0;
+  --border-strong: #cbd5e1;
   --text-primary: #0f172a;
-  --text-secondary: #334155;
-  --text-muted: #475569;
-  --primary: #1d4ed8;
-  --primary-hover: #1e40af;
-  --critical: #dc2626;
-  --high: #ea580c;
-  --medium: #d97706;
-  --low: #16a34a;
-  --success: #15803d;
-  --warning: #b45309;
-  --danger: #dc2626;
+  --text-secondary: #475569;
+
+  --accent: #14b8a6;
+  --accent-text: #0f766e;
+  --accent-hover: #0d9488;
+
+  --severity-critical: #ef4444;
+  --severity-high: #f97316;
+  --severity-moderate: #f59e0b;
+  --severity-ok: #22c55e;
+
+  --severity-critical-text: #dc2626;
+  --severity-high-text: #c2410c;
+  --severity-moderate-text: #b45309;
+  --severity-ok-text: #15803d;
+
+  --tint-accent: rgba(15, 118, 110, 0.1);
+  --tint-critical: rgba(220, 38, 38, 0.1);
+  --tint-high: rgba(194, 65, 12, 0.1);
+  --tint-moderate: rgba(180, 83, 9, 0.1);
+  --tint-ok: rgba(21, 128, 61, 0.1);
+  --tint-neutral: rgba(15, 23, 42, 0.05);
+
+  --overlay-surface: rgba(255, 255, 255, 0.92);
+  --overlay-border: rgba(15, 23, 42, 0.1);
+  --overlay-shadow: 0 6px 24px rgba(15, 23, 42, 0.12);
+  --focus-ring: #0f172a;
+
+  /* Typography & table density (app-wide). */
+  --font-size-base: 1.0625rem; /* 17px */
+  --font-size-sm: 0.9375rem; /* 15px */
+  --font-size-xs: 0.875rem; /* 14px */
+  --line-height-base: 1.5;
+  --table-cell-padding-y: 0.75rem;
+  --table-cell-padding-x: 1rem;
+  --table-header-size: 0.9375rem; /* 15px */
+
+  /* Legacy aliases. Kept so existing call sites resolve to the new system. */
+  --text-muted: var(--text-secondary);
+  --primary: var(--accent-text);
+  --primary-hover: var(--accent-hover);
+  --critical: var(--severity-critical-text);
+  --high: var(--severity-high-text);
+  --medium: var(--severity-moderate-text);
+  --low: var(--severity-ok-text);
+  --success: var(--severity-ok-text);
+  --warning: var(--severity-moderate-text);
+  --danger: var(--severity-critical-text);
 }
 
+/* Dark mode (default). */
 .dark {
-  --bg: #020617;
-  --surface: #0f172a;
-  --surface-elevated: #1e293b;
-  --surface-hover: #334155;
-  --border: #334155;
-  --text-primary: #f8fafc;
-  --text-secondary: #cbd5e1;
-  --text-muted: #b0bec9;
-  --primary: #3b82f6;
-  --primary-hover: #2563eb;
-  --critical: #f87171;
-  --high: #fb923c;
-  --medium: #fbbf24;
-  --low: #4ade80;
-  --success: #86efac;
-  --warning: #fcd34d;
-  --danger: #f87171;
+  --bg: #0b0f14;
+  --surface: #151b23;
+  --surface-elevated: #1b222c;
+  --surface-hover: #232b36;
+  --border: #262d36;
+  --border-strong: #38414d;
+  --text-primary: #e6edf3;
+  --text-secondary: #8b949e;
+
+  --accent: #14b8a6;
+  --accent-text: #14b8a6;
+  --accent-hover: #2dd4bf;
+
+  --severity-critical: #ef4444;
+  --severity-high: #f97316;
+  --severity-moderate: #f59e0b;
+  --severity-ok: #22c55e;
+
+  --severity-critical-text: #ef4444;
+  --severity-high-text: #f97316;
+  --severity-moderate-text: #f59e0b;
+  --severity-ok-text: #22c55e;
+
+  --tint-accent: rgba(20, 184, 166, 0.14);
+  --tint-critical: rgba(239, 68, 68, 0.16);
+  --tint-high: rgba(249, 115, 22, 0.16);
+  --tint-moderate: rgba(245, 158, 11, 0.16);
+  --tint-ok: rgba(34, 197, 94, 0.16);
+  --tint-neutral: rgba(230, 237, 243, 0.07);
+
+  --overlay-surface: rgba(21, 27, 35, 0.9);
+  --overlay-border: rgba(230, 237, 243, 0.12);
+  --overlay-shadow: 0 6px 24px rgba(0, 0, 0, 0.45);
+  --focus-ring: #e6edf3;
 }
 
 html,
@@ -52,8 +118,8 @@ body {
   margin: 0;
   background-color: var(--bg);
   color: var(--text-primary);
-  font-size: 14px;
-  line-height: 1.45;
+  font-size: var(--font-size-base);
+  line-height: var(--line-height-base);
 }
 
 .ops-card {
@@ -62,13 +128,14 @@ body {
   border-radius: 0.5rem;
 }
 
+/* Neutral hover: chrome should not consume the accent. */
 .ops-card-hover:hover {
-  border-color: var(--primary);
-  box-shadow: 0 1px 4px rgba(29, 78, 216, 0.12);
+  border-color: var(--border-strong);
+  background: var(--surface-elevated);
 }
 
 .ops-row-selected {
-  background: rgba(59, 130, 246, 0.1);
+  background: var(--surface-hover);
 }
 
 .ops-input,
@@ -77,12 +144,12 @@ body {
   color: var(--text-primary);
   border: 1px solid var(--border);
   border-radius: 0.375rem;
-  padding: 0.4375rem 0.625rem;
-  font-size: 0.875rem;
+  padding: 0.5rem 0.75rem;
+  font-size: var(--font-size-base);
 }
 
 .ops-input::placeholder {
-  color: var(--text-muted);
+  color: var(--text-secondary);
 }
 
 .ops-select option {
@@ -91,7 +158,7 @@ body {
 }
 
 .dark .ops-select {
-  border-color: #475569;
+  border-color: var(--border-strong);
   background-color: var(--surface-elevated);
 }
 
@@ -100,16 +167,16 @@ body {
   color: var(--text-primary);
 }
 
-.ops-input:focus,
-.ops-select:focus {
-  outline: 2px solid var(--primary);
+.ops-input:focus-visible,
+.ops-select:focus-visible {
+  outline: 2px solid var(--focus-ring);
   outline-offset: 1px;
 }
 
 .ops-btn {
   border-radius: 0.375rem;
-  padding: 0.375rem 0.75rem;
-  font-size: 0.8125rem;
+  padding: 0.5rem 0.875rem;
+  font-size: var(--font-size-sm);
   font-weight: 600;
   transition: background-color 150ms ease, opacity 150ms ease;
 }
@@ -123,92 +190,190 @@ body {
   cursor: not-allowed;
 }
 
+.ops-btn:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 1px;
+}
+
+/* Accent is reserved for real actions. */
 .ops-btn-primary {
-  background: var(--primary);
-  color: white;
+  background: var(--accent);
+  color: #04231f;
 }
 
 .ops-btn-primary:hover:not(:disabled) {
-  background: var(--primary-hover);
+  background: var(--accent-hover);
 }
 
 .ops-table {
   width: 100%;
-  font-size: 0.875rem;
+  font-size: var(--font-size-base);
 }
 
 .ops-table thead th {
-  color: var(--text-muted);
+  color: var(--text-secondary);
   font-weight: 600;
-  font-size: 0.8125rem;
+  font-size: var(--table-header-size);
   text-transform: uppercase;
-  letter-spacing: 0.02em;
+  letter-spacing: 0.04em;
+  padding: var(--table-cell-padding-y) var(--table-cell-padding-x);
+  vertical-align: middle;
+}
+
+.ops-table tbody td {
+  padding: var(--table-cell-padding-y) var(--table-cell-padding-x);
+  vertical-align: middle;
+  line-height: var(--line-height-base);
+}
+
+.ops-table tbody tr {
+  min-height: 2.75rem;
 }
 
 .ops-table tbody tr:hover {
-  background: rgba(59, 130, 246, 0.08);
+  background: var(--tint-neutral);
 }
 
 .ops-badge {
   display: inline-flex;
   align-items: center;
-  border-radius: 9999px;
+  border-radius: 0.25rem;
   padding: 0.125rem 0.5rem;
-  font-size: 0.8125rem;
+  font-size: var(--font-size-xs);
   font-weight: 600;
-  line-height: 1.25;
+  line-height: 1.35;
   white-space: nowrap;
 }
 
+/* Shared section/card headings used across data pages. */
+.ops-section-title {
+  font-size: var(--font-size-base);
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.ops-section-label {
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--text-secondary);
+}
+
+.ops-muted {
+  color: var(--text-secondary);
+}
+
 .badge-critical {
-  background: rgba(220, 38, 38, 0.15);
-  color: var(--critical);
+  background: var(--tint-critical);
+  color: var(--severity-critical-text);
 }
 
 .badge-high {
-  background: rgba(234, 88, 12, 0.15);
-  color: var(--high);
+  background: var(--tint-high);
+  color: var(--severity-high-text);
 }
 
 .badge-medium {
-  background: rgba(217, 119, 6, 0.15);
-  color: var(--medium);
+  background: var(--tint-moderate);
+  color: var(--severity-moderate-text);
 }
 
 .badge-low {
-  background: rgba(22, 163, 74, 0.15);
-  color: var(--low);
+  background: var(--tint-ok);
+  color: var(--severity-ok-text);
 }
 
 .badge-success {
-  background: rgba(21, 128, 61, 0.15);
-  color: var(--success);
+  background: var(--tint-ok);
+  color: var(--severity-ok-text);
 }
 
 .badge-warning {
-  background: rgba(180, 83, 9, 0.15);
-  color: var(--warning);
+  background: var(--tint-moderate);
+  color: var(--severity-moderate-text);
 }
 
 .badge-info {
-  background: rgba(29, 78, 216, 0.15);
-  color: var(--primary);
+  background: var(--tint-accent);
+  color: var(--accent-text);
 }
 
 .badge-neutral {
-  background: var(--surface-elevated);
+  background: var(--tint-neutral);
   color: var(--text-secondary);
   border: 1px solid var(--border);
 }
 
+/* Icon chips are neutral unless they carry a severity meaning. */
 .ops-icon-chip {
-  background: rgba(59, 130, 246, 0.12);
+  background: var(--tint-neutral);
+  color: var(--text-secondary);
 }
 
-.priority-critical { color: var(--critical); }
-.priority-high { color: var(--high); }
-.priority-moderate { color: var(--medium); }
-.priority-low { color: var(--low); }
+.ops-icon-chip--critical {
+  background: var(--tint-critical);
+  color: var(--severity-critical-text);
+}
+
+.ops-icon-chip--high {
+  background: var(--tint-high);
+  color: var(--severity-high-text);
+}
+
+.ops-icon-chip--moderate {
+  background: var(--tint-moderate);
+  color: var(--severity-moderate-text);
+}
+
+.ops-icon-chip--ok {
+  background: var(--tint-ok);
+  color: var(--severity-ok-text);
+}
+
+.priority-critical { color: var(--severity-critical-text); }
+.priority-high { color: var(--severity-high-text); }
+.priority-moderate { color: var(--severity-moderate-text); }
+.priority-low { color: var(--severity-ok-text); }
+
+/* Floating panels docked over the map surface. */
+.ops-overlay-panel {
+  background: var(--overlay-surface);
+  border: 1px solid var(--overlay-border);
+  border-radius: 0.5rem;
+  box-shadow: var(--overlay-shadow);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+.ops-map-surface {
+  position: relative;
+  border: 1px solid var(--border);
+  border-radius: 0.5rem;
+  overflow: hidden;
+  background: var(--surface);
+}
+
+/* HUD panels are solid cards in normal flow; once they float over the map
+   they become translucent so the map stays readable underneath. */
+@media (min-width: 1024px) {
+  /* Keep Leaflet's top-left zoom control clear of the floating KPI row. */
+  .ops-map-hud-offset .leaflet-top.leaflet-left {
+    margin-top: 5.5rem;
+  }
+
+  .ops-hud .ops-card {
+    background: var(--overlay-surface);
+    border-color: var(--overlay-border);
+    box-shadow: var(--overlay-shadow);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+  }
+
+  .ops-hud .ops-card-hover:hover {
+    background: var(--surface-hover);
+  }
+}
 
 .leaflet-control-zoom a {
   width: 34px !important;
@@ -233,4 +398,170 @@ body {
 .leaflet-container {
   font-family: inherit;
   z-index: 0;
+}
+
+/* Severity-coloured map pins. */
+.ops-map-pin-wrap {
+  background: transparent;
+  border: 0;
+}
+
+.ops-map-pin {
+  display: block;
+  width: 14px;
+  height: 14px;
+  border-radius: 9999px;
+  background: var(--text-secondary);
+  border: 2px solid rgba(255, 255, 255, 0.92);
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.35), 0 2px 6px rgba(0, 0, 0, 0.4);
+}
+
+.ops-map-pin--selected {
+  width: 20px;
+  height: 20px;
+}
+
+.ops-map-pin--critical { background: var(--severity-critical); }
+.ops-map-pin--high { background: var(--severity-high); }
+.ops-map-pin--moderate { background: var(--severity-moderate); }
+.ops-map-pin--ok { background: var(--severity-ok); }
+.ops-map-pin--neutral { background: var(--text-secondary); }
+
+/* Keep OSM tiles from glaring against the dark shell. */
+.dark .leaflet-tile-pane {
+  filter: brightness(0.72) saturate(0.78) contrast(1.04);
+}
+
+.dark .leaflet-popup-content-wrapper,
+.dark .leaflet-popup-tip {
+  background: var(--surface-elevated);
+  color: var(--text-primary);
+}
+
+/* Landing splash — Ken Burns background (CSS-only). Scoped to the landing
+   page only; the app interior deliberately does not inherit this. */
+.landing-page {
+  position: relative;
+  overflow: hidden;
+}
+
+.landing-bg {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+}
+
+.landing-bg__image {
+  position: absolute;
+  inset: -6%;
+  background-image: url("/landing-bg.svg");
+  background-size: cover;
+  background-position: center;
+  animation: landing-ken-burns 25s ease-in-out infinite alternate;
+  will-change: transform;
+}
+
+@keyframes landing-ken-burns {
+  from {
+    transform: scale(1);
+  }
+  to {
+    transform: scale(1.08);
+  }
+}
+
+.landing-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background: linear-gradient(
+    180deg,
+    rgba(11, 15, 20, 0.35) 0%,
+    rgba(11, 15, 20, 0.72) 100%
+  );
+}
+
+.landing-content {
+  position: relative;
+  z-index: 2;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .landing-bg__image {
+    animation: none;
+  }
+}
+
+/* Contextual info tooltips */
+.info-tooltip {
+  position: relative;
+  display: inline-flex;
+  vertical-align: middle;
+  margin-left: 0.25rem;
+}
+
+.info-tooltip__trigger {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: var(--text-secondary);
+  cursor: help;
+  line-height: 1;
+}
+
+.info-tooltip__trigger:hover,
+.info-tooltip__trigger:focus-visible {
+  color: var(--text-primary);
+  outline: none;
+}
+
+.info-tooltip__content {
+  position: absolute;
+  bottom: calc(100% + 6px);
+  left: 50%;
+  transform: translateX(-50%);
+  width: max-content;
+  max-width: 240px;
+  padding: 0.4375rem 0.5625rem;
+  font-size: var(--font-size-sm);
+  font-weight: 400;
+  line-height: 1.4;
+  text-align: left;
+  color: var(--text-primary);
+  background: var(--surface-elevated);
+  border: 1px solid var(--border);
+  border-radius: 0.375rem;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  z-index: 60;
+}
+
+.info-tooltip:hover .info-tooltip__content,
+.info-tooltip:focus-within .info-tooltip__content {
+  opacity: 1;
+  visibility: visible;
+}
+
+@media print {
+  .ops-sidebar,
+  nav,
+  .print\\:hidden {
+    display: none !important;
+  }
+
+  body {
+    background: white;
+    color: #0f172a;
+  }
+
+  .ops-card {
+    break-inside: avoid;
+    box-shadow: none;
+  }
 }

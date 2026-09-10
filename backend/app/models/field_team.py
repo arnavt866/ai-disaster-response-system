@@ -11,6 +11,7 @@ class FieldTeam(Base):
     status = Column(String, nullable=False, default="Available")
     vehicle_type = Column(String, nullable=True)
     vehicle_capacity = Column(Integer, nullable=False, default=0)
+    personnel_count = Column(Integer, nullable=True)
     contact_number = Column(String, nullable=True)
     base_latitude = Column(Float, nullable=True)
     base_longitude = Column(Float, nullable=True)

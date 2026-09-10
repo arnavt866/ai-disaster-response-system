@@ -1,0 +1,72 @@
+services:
+  db:
+    image: postgis/postgis:16-3.4
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: disaster_db
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d disaster_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 45s
+    restart: unless-stopped
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    environment:
+      DATABASE_URL: postgresql+psycopg2://postgres:password@db:5432/disaster_db
+      USGS_URL: https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_day.geojson
+      GDACS_URL: https://www.gdacs.org/gdacsapi/api/events/geteventlist/SEARCH
+      NDMA_PORTAL_URL: https://sachet.ndma.gov.in/
+      SACHET_RSS_URL: https://sachet.ndma.gov.in/cap_public_website/rss/rss_india.xml
+      SACHET_CAP_URL: https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile
+      SACHET_POLYGON_URL: https://sachet.ndma.gov.in/cap_public_website/FetchPolygonXMLFile
+      OVERPASS_URL: https://overpass.openstreetmap.ru/api/interpreter
+      SENTINEL_STAC_URL: https://earth-search.aws.element84.com/v1
+      SENTINEL_STAC_COLLECTION: sentinel-2-l2a
+      # Snapshot file is auto-detected in /app/snapshots (demo_snapshot.sql.gz,
+      # then .sql, then legacy .dump). Set DEMO_SNAPSHOT_PATH to force one.
+    ports:
+      - "8000:8000"
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      # Large geospatial assets — mount from host; do not bake into the image.
+      - ./backend/data:/app/data:ro
+      - ./backend/models:/app/models:ro
+      - ./backend/datasets:/app/datasets
+      - ./backend/snapshots:/app/snapshots:ro
+      - backend_logs:/app/logs
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/"]
+      interval: 10s
+      timeout: 5s
+      retries: 8
+      start_period: 300s
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        VITE_API_URL: http://localhost:8000
+    ports:
+      - "3000:80"
+    depends_on:
+      backend:
+        condition: service_healthy
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+  backend_logs:

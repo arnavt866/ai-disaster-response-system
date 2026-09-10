@@ -39,3 +39,10 @@ class DisasterEventResponse(DisasterEventBase):
     class Config:
 
         from_attributes = True
+
+
+class DisasterEventListResponse(BaseModel):
+    total: int
+    offset: int
+    limit: int
+    records: list[DisasterEventResponse]

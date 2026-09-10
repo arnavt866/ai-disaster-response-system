@@ -1,11 +1,13 @@
 import { useEffect, useMemo, useState } from "react"
-import { MapContainer, TileLayer, Marker, Popup, Polyline } from "react-leaflet"
+import { MapContainer, TileLayer, Marker, Popup, Polyline, CircleMarker } from "react-leaflet"
+import { Maximize2, Minimize2 } from "lucide-react"
 import "leaflet/dist/leaflet.css"
 import { getZones, updateZonePriority } from "../api/zones"
 import { getReliefCenters } from "../api/inventory"
-import { runAllocation, recalculateZoneAllocation, computeRoute } from "../api/allocation"
+import { runAllocation, recalculateZoneAllocation, computeRoute, blockRoadSegment, unblockRoadSegment, clearRoadBlocks, getRoadBlocks } from "../api/allocation"
 import { createMission } from "../api/missions"
 import { getFieldTeams } from "../api/fieldTeams"
+import { getSystemMetadata } from "../api/system"
 import Select from "../components/ui/Select"
 import PageHeader from "../components/ui/PageHeader"
 import FitRouteBounds from "../components/Map/FitRouteBounds"
@@ -15,14 +17,16 @@ import {
   getRoutePathOptions,
   resolveRouteDepotId,
   routePolylinePositions,
+  sampleRouteBlockPoints,
 } from "../utils/routeUtils"
-
-const PRIORITIES = ["Critical", "High", "Moderate", "Low"]
+import InfoTooltip from "../components/ui/InfoTooltip"
+import AiEngineLabel from "../components/ui/AiEngineLabel"
 
 export default function Operations() {
   const [zones, setZones] = useState([])
   const [depots, setDepots] = useState([])
   const [teams, setTeams] = useState([])
+  const [priorities, setPriorities] = useState([])
   const [selectedZoneId, setSelectedZoneId] = useState(null)
   const [priorityDraft, setPriorityDraft] = useState("Moderate")
   const [allocation, setAllocation] = useState(null)
@@ -30,15 +34,19 @@ export default function Operations() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState("")
   const [missionNotice, setMissionNotice] = useState("")
+  const [roadBlocks, setRoadBlocks] = useState([])
+  const [routeRefreshing, setRouteRefreshing] = useState(false)
+  const [routeMapFullscreen, setRouteMapFullscreen] = useState(false)
 
   useEffect(() => {
     let cancelled = false
-    Promise.all([getZones(), getReliefCenters(), getFieldTeams()])
-      .then(([zoneData, depotData, teamData]) => {
+    Promise.all([getZones(), getReliefCenters(), getFieldTeams(), getSystemMetadata()])
+      .then(([zoneData, depotData, teamData, metadata]) => {
         if (cancelled) return
         setZones(zoneData)
         setDepots(depotData)
         setTeams(teamData)
+        setPriorities(metadata.operational_priorities || [])
         if (zoneData.length > 0) {
           setSelectedZoneId(zoneData[0].id)
           setPriorityDraft(zoneData[0].operational_priority || zoneData[0].severity)
@@ -50,6 +58,12 @@ export default function Operations() {
     return () => {
       cancelled = true
     }
+  }, [])
+
+  useEffect(() => {
+    getRoadBlocks()
+      .then((data) => setRoadBlocks(data.blocks || []))
+      .catch(() => {})
   }, [])
 
   const selectedZone = useMemo(
@@ -69,14 +83,28 @@ export default function Operations() {
     [route],
   );
 
+  const routeBlockPoints = useMemo(
+    () => sampleRouteBlockPoints(route),
+    [route],
+  );
+
   async function handleOptimize() {
+    if (!selectedZoneId) {
+      setError("Select a disaster zone before running optimization. Full-system runs are not started from this page.")
+      return
+    }
+
     setLoading(true)
     setError("")
     setMissionNotice("")
     try {
-      const result = await runAllocation(selectedZoneId ? [selectedZoneId] : null)
+      const result = await runAllocation([selectedZoneId], true, false)
+
       if (result.status === "insufficient_inventory") {
         setError(result.message || "Insufficient inventory for allocation.")
+      }
+      if (result.warning) {
+        setMissionNotice(result.warning)
       }
       setAllocation(result)
     } catch (err) {
@@ -103,9 +131,9 @@ export default function Operations() {
     }
   }
 
-  async function handleRoute() {
-    if (!selectedZoneId || depots.length === 0) return
-    setLoading(true)
+  async function refreshRoute() {
+    if (!selectedZoneId || depots.length === 0) return null
+    setRouteRefreshing(true)
     setError("")
     try {
       const depotId = resolveRouteDepotId(
@@ -116,11 +144,66 @@ export default function Operations() {
       )
       const routeData = await computeRoute(depotId, selectedZoneId)
       setRoute(routeData)
+      const blocks = await getRoadBlocks(routeData.region_id || undefined)
+      setRoadBlocks(blocks.blocks || [])
+      return routeData
+    } catch (err) {
+      setError(err.message)
+      return null
+    } finally {
+      setRouteRefreshing(false)
+    }
+  }
+
+  async function handleRoute() {
+    if (!selectedZoneId || depots.length === 0) return
+    setLoading(true)
+    await refreshRoute()
+    setLoading(false)
+  }
+
+  async function handleToggleRoadBlock(edge) {
+    const key = `${edge.region_id}:${edge.u}:${edge.v}`
+    const isBlocked = roadBlocks.some(
+      (block) => `${block.region_id}:${block.u}:${block.v}` === key,
+    )
+    setRouteRefreshing(true)
+    setError("")
+    try {
+      if (isBlocked) {
+        await unblockRoadSegment(edge.region_id, edge.u, edge.v)
+      } else {
+        await blockRoadSegment(edge.region_id, edge.u, edge.v)
+      }
+      await refreshRoute()
     } catch (err) {
       setError(err.message)
     } finally {
-      setLoading(false)
+      setRouteRefreshing(false)
     }
+  }
+
+  async function handleClearRoadBlocks() {
+    if (!route?.region_id) return
+    setRouteRefreshing(true)
+    setError("")
+    try {
+      await clearRoadBlocks(route.region_id)
+      await refreshRoute()
+    } catch (err) {
+      setError(err.message)
+    } finally {
+      setRouteRefreshing(false)
+    }
+  }
+
+  function isEdgeBlocked(edge) {
+    return roadBlocks.some(
+      (block) =>
+        block.region_id === edge.region_id &&
+        String(block.u) === String(edge.u) &&
+        String(block.v) === String(edge.v),
+    )
   }
 
   async function handleCreateMission() {
@@ -162,24 +245,24 @@ export default function Operations() {
     <div className="space-y-3">
       <PageHeader
         title="Resource Allocation"
-        subtitle="Optimize supply against M2 demand, override priority, route, and create missions"
+        subtitle="LP optimization against ML-predicted zone demand — override priority, route, and create missions"
       />
 
       {error && (
-        <div className="rounded-md border border-[var(--critical)] bg-red-50 px-3 py-2 text-xs text-[var(--critical)] dark:bg-red-950/30">
+        <div className="rounded-md border border-[var(--critical)] bg-red-50 px-3 py-2 text-[var(--critical)] dark:bg-red-950/30">
           {error}
         </div>
       )}
       {missionNotice && (
-        <div className="rounded-md border border-[var(--success)] px-3 py-2 text-xs text-[var(--success)]">
+        <div className="rounded-md border border-[var(--success)] px-3 py-2 text-[var(--success)]">
           {missionNotice}
         </div>
       )}
 
       <div className="grid grid-cols-1 gap-3 xl:grid-cols-3">
         <div className="ops-card space-y-2 p-3">
-          <h2 className="text-sm font-semibold">Zone & Priority</h2>
-          <ol className="mb-2 list-decimal space-y-0.5 pl-4 text-xs text-[var(--text-muted)]">
+          <h2 className="ops-section-title">Zone & Priority</h2>
+          <ol className="mb-2 list-decimal space-y-0.5 pl-4 ops-muted">
             <li>Select zone and priority</li>
             <li>Run optimization</li>
             <li>Override if needed</li>
@@ -203,13 +286,20 @@ export default function Operations() {
           </Select>
 
           <Select value={priorityDraft} onChange={(e) => setPriorityDraft(e.target.value)}>
-            {PRIORITIES.map((priority) => (
+            {priorities.map((priority) => (
               <option key={priority} value={priority}>{priority}</option>
             ))}
           </Select>
 
-          <div className="flex flex-wrap gap-2">
-            <button className="ops-btn ops-btn-primary" onClick={handleOptimize} disabled={loading}>Run Optimization</button>
+          <div className="flex flex-wrap items-center gap-2">
+            <button className="ops-btn ops-btn-primary" onClick={handleOptimize} disabled={loading || !selectedZoneId}>
+              Run Optimization
+            </button>
+            <AiEngineLabel
+              title="Demand inputs come from the zone ML predictor; allocation uses linear programming over depot supply and transport capacity."
+            >
+              AI-recommended allocation
+            </AiEngineLabel>
             <button className="ops-btn bg-[var(--medium)] text-white" onClick={handlePriorityOverride} disabled={loading}>Override & Recalculate</button>
             <button className="ops-btn bg-[var(--surface-elevated)] text-[var(--text-primary)] border border-[var(--border)]" onClick={handleRoute} disabled={loading}>Generate Route</button>
             <button className="ops-btn bg-[var(--success)] text-white" onClick={handleCreateMission} disabled={loading}>Create Mission</button>
@@ -217,23 +307,46 @@ export default function Operations() {
         </div>
 
         <div className="ops-card xl:col-span-2 p-3">
-          <h2 className="mb-2 text-sm font-semibold">Allocation Plan</h2>
+          <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
+            <h2 className="ops-section-title">Allocation Plan</h2>
+            {allocation && (
+              <AiEngineLabel title="Demanded units are ML predictions; allocated units are LP optimizer output.">
+                ML demand · LP optimized
+              </AiEngineLabel>
+            )}
+          </div>
           {!allocation ? (
-            <p className="text-xs text-[var(--text-muted)]">Run optimization to view allocation results.</p>
+            <p className="ops-muted">Run optimization to view allocation results.</p>
           ) : (
             <div className="space-y-2">
-              <p className="text-xs">
-                Status: <strong>{allocation.status}</strong> | Coverage: <strong>{(allocation.coverage_ratio * 100).toFixed(1)}%</strong>
+              <p>
+                Status: <strong>{allocation.status}</strong>
+                {" | "}
+                <span className="inline-flex items-center">
+                  Coverage: <strong>{(allocation.coverage_ratio * 100).toFixed(1)}%</strong>
+                  <InfoTooltip
+                    label="About coverage ratio"
+                    text="Fraction of total zone demand fulfilled by this allocation plan (allocated ÷ demanded across all categories)."
+                  />
+                </span>
               </p>
               <div className="overflow-x-auto">
-                <table className="ops-table min-w-full text-xs">
+                <table className="ops-table min-w-full">
                   <thead>
                     <tr className="border-b border-[var(--border)] text-left">
                       <th className="py-1 pr-2">Zone</th>
                       <th className="py-1 pr-2">Category</th>
                       <th className="py-1 pr-2">Demanded</th>
                       <th className="py-1 pr-2">Allocated</th>
-                      <th className="py-1 pr-2">Unmet</th>
+                      <th className="py-1 pr-2">
+                        <span className="inline-flex items-center">
+                          Unmet
+                          <InfoTooltip
+                            label="About unmet demand"
+                            text="Units still needed for this zone and resource category after optimization."
+                          />
+                        </span>
+                      </th>
                     </tr>
                   </thead>
                   <tbody>
@@ -255,17 +368,77 @@ export default function Operations() {
       </div>
 
       {route && selectedZone && routeDepot && routePositions.length > 0 && (
-        <div className="ops-card p-3">
-          <h2 className="mb-1 text-sm font-semibold">Route Overlay</h2>
-          <p className="mb-1 text-xs text-[var(--text-muted)]">
-            {getRouteOverlayLabel(route)}
-            {route.routing_label ? ` — ${route.routing_label}` : ""}
-          </p>
-          <p className="mb-2 text-xs text-[var(--text-muted)]">
-            {route.depot_name} → {route.zone_name}: {route.distance_km} km, ETA {route.estimated_travel_hours} h ({route.route_status})
-            {routePositions.length > 2 ? ` · ${routePositions.length} path points` : ""}
-          </p>
-          <div className="h-64 overflow-hidden rounded-md border border-[var(--border)]">
+        <div
+          className={
+            routeMapFullscreen
+              ? "fixed inset-0 z-50 flex flex-col bg-[var(--bg)] p-3"
+              : "ops-card p-3"
+          }
+        >
+          <div className="mb-2 flex flex-wrap items-start justify-between gap-2">
+            <div className="min-w-0 flex-1">
+              <h2 className="ops-section-title">Route Overlay</h2>
+              <p className="ops-muted">
+                {getRouteOverlayLabel(route)}
+                {route.routing_label ? ` — ${route.routing_label}` : ""}
+              </p>
+              <p className="ops-muted">
+                {route.depot_name} → {route.zone_name}: {route.distance_km} km, ETA {route.estimated_travel_hours} h ({route.route_status})
+                {routePositions.length > 2 ? ` · ${routePositions.length} path points` : ""}
+                {route.routing_method ? ` · ${route.routing_method}` : ""}
+              </p>
+            </div>
+            <button
+              type="button"
+              className="ops-btn shrink-0 border border-[var(--border)] bg-[var(--surface-elevated)]"
+              onClick={() => setRouteMapFullscreen((prev) => !prev)}
+              title={routeMapFullscreen ? "Exit fullscreen map" : "Fullscreen map"}
+            >
+              {routeMapFullscreen ? <Minimize2 className="h-4 w-4" /> : <Maximize2 className="h-4 w-4" />}
+            </button>
+          </div>
+          {routeBlockPoints.length > 0 && (
+            <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
+              <p className="ops-muted">
+                Click a point on the route to block that segment
+                {route.path_edges?.length > routeBlockPoints.length
+                  ? ` (${routeBlockPoints.length} of ${route.path_edges.length} shown)`
+                  : ""}
+                . Blocked edges are avoided on re-route.
+              </p>
+              <button
+                type="button"
+                className="ops-btn border border-[var(--border)] bg-[var(--surface-elevated)]"
+                disabled={routeRefreshing || roadBlocks.length === 0}
+                onClick={handleClearRoadBlocks}
+              >
+                Clear region blocks
+              </button>
+            </div>
+          )}
+          {routeBlockPoints.some((point) => isEdgeBlocked(point.edge)) && (
+            <ul className="mb-2 flex flex-wrap gap-1">
+              {routeBlockPoints.filter((point) => isEdgeBlocked(point.edge)).map((point) => (
+                <li key={`${point.edge.region_id}-${point.edge.u}-${point.edge.v}`}>
+                  <button
+                    type="button"
+                    className="ops-btn bg-[var(--critical)] px-2 py-1 text-white"
+                    disabled={routeRefreshing}
+                    onClick={() => handleToggleRoadBlock(point.edge)}
+                  >
+                    Unblock seg {point.index + 1}
+                  </button>
+                </li>
+              ))}
+            </ul>
+          )}
+          <div
+            className={
+              routeMapFullscreen
+                ? "min-h-0 flex-1 overflow-hidden rounded-md border border-[var(--border)]"
+                : "h-[min(58vh,680px)] min-h-[24rem] overflow-hidden rounded-md border border-[var(--border)]"
+            }
+          >
             <MapContainer
               center={routePositions[0]}
               zoom={10}
@@ -287,6 +460,34 @@ export default function Operations() {
                 positions={routePositions}
                 pathOptions={getRoutePathOptions(route)}
               />
+              {routeBlockPoints.map((point) => {
+                const blocked = isEdgeBlocked(point.edge)
+                return (
+                  <CircleMarker
+                    key={`${point.edge.region_id}-${point.edge.u}-${point.edge.v}`}
+                    center={[point.lat, point.lon]}
+                    radius={blocked ? 9 : 7}
+                    pathOptions={{
+                      color: blocked ? "var(--severity-critical)" : "var(--accent)",
+                      fillColor: blocked ? "var(--severity-critical)" : "var(--accent)",
+                      fillOpacity: 0.9,
+                      weight: 2,
+                    }}
+                    eventHandlers={{
+                      click: () => {
+                        if (!routeRefreshing) handleToggleRoadBlock(point.edge)
+                      },
+                    }}
+                  >
+                    <Popup>
+                      Segment {point.index + 1}
+                      {point.edge.length_m != null ? ` · ${point.edge.length_m} m` : ""}
+                      <br />
+                      Click the marker to {blocked ? "unblock" : "block"} this segment.
+                    </Popup>
+                  </CircleMarker>
+                )
+              })}
             </MapContainer>
           </div>
         </div>

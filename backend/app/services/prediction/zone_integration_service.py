@@ -11,6 +11,7 @@ from app.config.settings import DEFAULT_RADIUS, GRID_CELL_SIZE
 from app.models.disaster_zone import DisasterZone
 from app.services.geospatial.grid_analysis_service import analyze_grid
 from app.services.geospatial.grid_district_service import enrich_grid_with_districts
+from app.services.geospatial.population_service import WORLDPOP_AGE_SEX_SOURCE
 from app.services.prediction.demand_service import recalculate_grid_demand
 from app.services.prediction.inference import load_model_registry
 from app.services.prediction.prediction_history import record_prediction
@@ -43,6 +44,18 @@ def build_grid_geojson_from_zone(zone: DisasterZone) -> dict[str, Any]:
     return mapping(cell)
 
 
+def profile_from_zone_cache(zone: DisasterZone) -> VulnerabilityProfile | None:
+    """Read precomputed WorldPop age/sex shares. Does not open rasters."""
+    if not getattr(zone, "vulnerability_data_available", False):
+        return None
+    return VulnerabilityProfile(
+        elderly_ratio=zone.elderly_ratio,
+        children_ratio=zone.children_ratio,
+        data_available=True,
+        source=zone.vulnerability_source or WORLDPOP_AGE_SEX_SOURCE,
+    )
+
+
 def predict_demand_for_zone(
     db: Session,
     zone_id: int,
@@ -63,6 +76,9 @@ def predict_demand_for_zone(
     zone = get_zone_by_id(db, zone_id)
     if zone is None:
         raise ValueError(f"Disaster zone {zone_id} not found")
+
+    if vulnerability_profile is None:
+        vulnerability_profile = profile_from_zone_cache(zone)
 
     grid_geojson = build_grid_geojson_from_zone(zone)
 

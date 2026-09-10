@@ -36,6 +36,19 @@ router = APIRouter(
     tags=["Prediction"],
 )
 
+METRICS_INTERPRETATION_NOTE = (
+    "MAE, RMSE, and R² in model_registry.json are internal validation metrics "
+    "against proxy-constructed labels (impact_based_proxy_v1), not real-world "
+    "relief-consumption accuracy. Targets are deterministically derivable from "
+    "model input features; see backend/docs/KNOWN_LIMITATIONS.md §2.5."
+)
+
+# Mentor-spec alias: same handler as POST /prediction/demand/zone/{zone_id}.
+compat_router = APIRouter(
+    prefix="/predict",
+    tags=["Prediction"],
+)
+
 
 def _vulnerability_profile(payload) -> VulnerabilityProfile | None:
     if payload is None:
@@ -89,6 +102,7 @@ def get_model_information():
             "Resource-demand targets are proxy-derived from historical impact "
             "variables, not observed ground-truth consumption."
         ),
+        "metrics_interpretation": METRICS_INTERPRETATION_NOTE,
     }
 
 
@@ -112,6 +126,7 @@ def get_model_evaluation():
         with report_path.open(encoding="utf-8") as handle:
             payload["comparison_table"] = json.load(handle)
 
+    payload["metrics_interpretation"] = METRICS_INTERPRETATION_NOTE
     return payload
 
 
@@ -224,12 +239,23 @@ def predict_zone_demand(
                 "milestone1_grid_analysis": result["milestone1_grid_analysis"],
                 "prediction_history_id": result["prediction_history_id"],
                 "source": result["source"],
+                "features": result["demand"]["grid_features"],
             },
         )
     except ValueError as exc:
         raise HTTPException(status_code=404, detail=str(exc)) from exc
     except ModelArtifactsNotFoundError as exc:
         raise HTTPException(status_code=503, detail=str(exc)) from exc
+
+
+@compat_router.post("/demand/{zone_id}")
+def predict_zone_demand_compat(
+    zone_id: int,
+    db: Session = Depends(get_db),
+    request: ZoneRecalculateRequest | None = None,
+):
+    """Spec alias for POST /prediction/demand/zone/{zone_id}."""
+    return predict_zone_demand(zone_id, db, request)
 
 
 @router.post("/demand/zone/{zone_id}/recalculate")

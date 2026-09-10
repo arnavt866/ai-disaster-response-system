@@ -13,7 +13,7 @@ This backend supports:
 1. **Milestone 1** — ingest disaster events, estimate impact areas, generate spatial grids, compute rule-based severity and resources, and persist disaster zones.
 2. **Milestone 2** — train proxy-demand models on historical NWDP/DESINVENTAR records, predict resource demand with uncertainty intervals, integrate with M1 zones, support dynamic recalibration and scenario simulation.
 
-The system is a research/prototype backend (FastAPI + PostgreSQL). Weeks 5–6 (logistics optimization, routing, dashboard) are **not implemented**.
+The system is a research/prototype backend (FastAPI + PostgreSQL). Weeks 5–6 (logistics optimization, routing, dashboard) are **not implemented** *(accurate as of the M1/M2 documentation freeze, 2026-08-17)*. See **§23 Milestone 3 addendum** and `docs/M3_COMPLETION_NOTES.md` for current status after Weeks 5–6 work.
 
 ---
 
@@ -23,7 +23,7 @@ The system is a research/prototype backend (FastAPI + PostgreSQL). Weeks 5–6 (
 |-------|------------|
 | API | FastAPI 0.141, Uvicorn, Starlette |
 | Database | PostgreSQL 17, SQLAlchemy 2.x, Alembic |
-| PostGIS | Extension may be enabled in PostgreSQL, but **not used** by application tables or queries |
+| PostGIS | Extension enabled; `disaster_zones.location` (`Geometry POINT`, SRID 4326); spatial queries via GeoAlchemy2 (`ST_DWithin` in `zone_service.get_zones_near_depot`) |
 | HTTP clients | httpx, requests |
 | Geospatial | Shapely, GeoPandas, PyProj, Fiona, rasterio, rasterstats |
 | OSM import | osmium (PBF streaming) |
@@ -44,11 +44,13 @@ Impact heuristics ──► grid cells ──► severity + rule resources ─�
 Historical XML (3 states) ──► normalized CSV ──► proxy targets ──► ML dataset
 ML training ──► Ridge models + conformal intervals ──► models/
 
-DisasterZone (M1) ──► analyze_grid ──► district overlap ──► M2 predict_demand
+DisasterZone (M1 DB record + PostGIS location) ──► analyze_grid ──► district overlap ──► M2 predict_demand
 Field reports / recalculate ──► prediction_history.jsonl
+NDMA SACHET CAP ──► ndma_alerts (early warning only)
+Copernicus EMS EMSR357 ──► satellite_assessments ──► in-coverage damage lookup
 ```
 
-**Geospatial processing:** polygon/area operations run in Python via Shapely and GeoPandas. The database stores scalar `latitude`/`longitude` columns only; there are no `geometry` columns and no PostGIS spatial SQL in the application runtime path.
+**Geospatial processing:** polygon/area operations run in Python via Shapely and GeoPandas. The database stores scalar `latitude`/`longitude` **and** a PostGIS `location` point on `disaster_zones`. Depot proximity uses `ST_DWithin` on geography casts (`zone_service.get_zones_near_depot`). Road routing for allocation/missions uses cached OSM graphs (NetworkX shortest path) under `data/road_graphs/` when both endpoints fall in a demo region; otherwise Haversine fallback.
 
 ---
 
@@ -96,8 +98,8 @@ backend/
 | `relief_routes.py` | Relief center CRUD | center location, capacity | DB records | Relief logistics (M1) |
 | `gdacs_routes.py` | `GET /gdacs/import` | `GDACS_URL` env | Imported events | External feed |
 | `usgs_routes.py` | `GET /usgs/import` | USGS GeoJSON URL | Imported events | External feed |
-| `ndma_routes.py` | `GET /ndma/` | None | Placeholder + portal status | Future NDMA |
-| `satellite_routes.py` | `/satellite/nearby`, `/satellite/damage` | lat/lon | Overpass facilities or STAC metadata | Spatial context |
+| `ndma_routes.py` | `GET /ndma/` | DB session | SACHET CAP alerts from `ndma_alerts` | Early warning feed |
+| `satellite_routes.py` | `/satellite/nearby`, `/satellite/damage` | lat/lon | Overpass facilities; CEMS damage when in EMSR357 coverage | Spatial context |
 | `grid_routes.py` | `GET /grid/generate` | lat/lon, disaster_type | Grid analysis + zones | Core M1 pipeline |
 | `impact_routes.py` | `GET /impact/estimate` | lat/lon, disaster_type | Impact polygon only | Pre-grid estimate |
 | `building_routes.py` | `POST /buildings/import` | force/confirm flags | OSM PBF → DB | One-time setup |
@@ -108,12 +110,13 @@ backend/
 | File | Purpose |
 |------|---------|
 | `gdacs_service.py` / `usgs_service.py` | Fetch GeoJSON, dedupe, insert `disaster_events` |
-| `ndma_service.py` | NDMA placeholder; portal reachability check only |
+| `ndma_service.py` | Poll SACHET RSS/CAP; parse and upsert `ndma_alerts` (early warning only; not disaster impact) |
 | `geospatial/impact_service.py` | Heuristic impact radius + circle polygon |
 | `geospatial/grid_service.py` | Clip impact polygon into `GRID_CELL_SIZE` cells |
 | `geospatial/grid_analysis_service.py` | Per-cell buildings, population, severity, rule resources |
 | `geospatial/population_service.py` | WorldPop zonal stats from local TIF |
 | `geospatial/satellite_service.py` | Overpass nearby facilities; Sentinel STAC scene metadata |
+| `geospatial/satellite_assessment_service.py` | Copernicus EMS (EMSR357) point-in-polygon damage lookup from `satellite_assessments` |
 | `severity_service.py` | Rule-based score 0–100 → Low/Moderate/High/Critical |
 | `resource_service.py` | Rule-based food/water/medical/shelter (M1 fallback) |
 | `disaster_zone_service.py` | Bulk persist zones from grid analysis |
@@ -133,7 +136,7 @@ backend/
 | `prediction/training.py` | Ridge/RF/XGBoost, chronological split |
 | `prediction/inference.py` | Load artifacts, `predict_demand`, grid feature mapping |
 | `prediction/uncertainty.py` | Split conformal 90% intervals |
-| `prediction/vulnerability.py` | Neutral 1.0 fallback when demographics absent |
+| `prediction/vulnerability.py` | WorldPop age/sex weighting when zone cache populated; neutral 1.0 fallback otherwise |
 | `prediction/demand_service.py` | Grid recalculation with field overrides |
 | `prediction/scenario_service.py` | Response speed + resource availability simulation |
 | `prediction/prediction_history.py` | Append-only JSONL audit log |
@@ -156,6 +159,10 @@ backend/
 | `train_demand_models.py` | Train all four targets |
 | `api_smoke_test.py` | M2 endpoint smoke test |
 | `connectivity_probe.py` | One-off external API audit (not production) |
+| `cache_zone_vulnerability.py` | WorldPop age/sex cache onto `disaster_zones` |
+| `import_emsr357_cems.py` | Import Copernicus EMS damage into `satellite_assessments` |
+| `run_scenario_validation.py` | Compare scenario CSV figures vs predict + allocate |
+| `load/run_demo_load_test.py` | Locust load test for key endpoints |
 
 ---
 
@@ -172,7 +179,7 @@ backend/
 
 - **GDACS** — `GET /gdacs/import` requires `GDACS_URL` in `.env`
 - **USGS** — `GET /usgs/import` defaults to USGS all-day GeoJSON
-- **NDMA** — `GET /ndma/` returns `Not Implemented`; portal HTML reachable, no REST API found
+- **NDMA** — `GET /ndma/` polls SACHET RSS/CAP and returns parsed alerts from `ndma_alerts` (early warning only; does not create `disaster_events`)
 - **Buildings** — `POST /buildings/import` streams local OSM PBF
 
 ### OSM and Population
@@ -208,8 +215,8 @@ GET /grid/generate?latitude=&longitude=&disaster_type=&magnitude=&alert_level=
 1. Impact radius is **heuristic**, not satellite-derived.
 2. Zones store **centroid only** — full grid geometry is returned in API but not persisted. Persisted coordinates are the geometric centroid of each grid-cell polygon.
 3. GDACS requires explicit `GDACS_URL` configuration.
-4. NDMA has no public REST feed integrated.
-5. Satellite **damage** is not automated; STAC returns scene metadata only.
+4. NDMA SACHET provides early-warning CAP alerts only (not verified impact data).
+5. Satellite **damage** outside Copernicus EMS coverage falls back to STAC metadata with `Unknown` classification; in EMSR357 coverage, CEMS classifications are returned from `satellite_assessments`.
 6. `/satellite/nearby` uses live Overpass (may timeout); failures return empty facilities safely.
 7. `building_service.py` and `osm_service.py` are unused legacy stubs.
 
@@ -291,7 +298,7 @@ Chronological by `event_year`: train ≤2003, validation 2004–2010, test 2011�
 
 | Model | Role |
 |-------|------|
-| Ridge | Linear baseline — **selected for all 4 targets** |
+| Ridge | Linear baseline — **selected for all 4 targets** after comparison with Random Forest and XGBoost on validation RMSE |
 | Random Forest | Nonlinear ensemble |
 | XGBoost | Boosted trees |
 
@@ -343,15 +350,15 @@ Historical XML lacks elderly/children/medically-dependent demographics.
 
 ## 13a. PostgreSQL / PostGIS Usage
 
-| Aspect | Current prototype behavior |
+| Aspect | Current behavior (2026-09) |
 |--------|----------------------------|
-| PostGIS extension | May be installed/enabled in PostgreSQL (e.g. 3.6.2), but not required by application code |
-| Database geometry columns | **None** — `disaster_zones`, `buildings`, and other tables use `Float` latitude/longitude |
-| Spatial queries in SQL | **None** — no `ST_*` functions in models, services, or migrations |
+| PostGIS extension | Enabled; required for `disaster_zones.location` |
+| Database geometry columns | `disaster_zones.location` — `Geometry(POINT, 4326)` with GiST index |
+| Spatial queries in SQL | `ST_DWithin` on geography casts in `zone_service.get_zones_near_depot` |
 | Runtime geospatial stack | Shapely, GeoPandas, PyProj, rasterio/rasterstats for in-process geometry and raster work |
 | Alembic | Ignores reflected `spatial_ref_sys` if present (`migrations/env.py`) |
 
-PostGIS being enabled does not change current M1/M2 behavior. Future Weeks 5–6 work could optionally persist geometries if needed.
+Zones also store scalar `latitude`/`longitude` for APIs and ML features. Full grid cell polygons are not persisted on the zone row.
 
 ---
 
@@ -360,7 +367,7 @@ PostGIS being enabled does not change current M1/M2 behavior. Future Weeks 5–6
 - **Field reports:** `field_report_overrides` on grid/zone endpoints update feature values without retraining
 - **Recalculate:** `POST /prediction/demand/zone/{id}/recalculate`
 - **History:** `datasets/prediction_history.jsonl` — zone_id, timestamp, update_source, model_version, predictions + intervals
-- **Satellite placeholder:** `satellite_placeholder` metadata only; no fabricated damage
+- **Satellite damage:** Copernicus EMS EMSR357 features in `satellite_assessments` (4,354 rows as of 2026-09); outside coverage, STAC metadata only with `Unknown` damage
 
 ---
 
@@ -412,9 +419,9 @@ Does not retrain models.
 | DELETE | `/relief-centers/{id}` | — | Deleted |
 | GET | `/gdacs/import` | — | Import GDACS events |
 | GET | `/usgs/import` | — | Import USGS events |
-| GET | `/ndma/` | — | NDMA placeholder + portal status |
+| GET | `/ndma/` | — | SACHET CAP alerts (`ndma_alerts`; early warning) |
 | GET | `/satellite/nearby` | `latitude`, `longitude`, `radius` | Nearby OSM facilities |
-| GET | `/satellite/damage` | `latitude`, `longitude` | STAC scene metadata; damage Unknown |
+| GET | `/satellite/damage` | `latitude`, `longitude` | CEMS damage when in EMSR357 coverage; else STAC + Unknown |
 | GET | `/impact/estimate` | `latitude`, `longitude`, `disaster_type`, optional `magnitude`, `alert_level` | Impact polygon |
 | GET | `/grid/generate` | Same as impact + `disaster_type` | Full grid analysis + zones |
 | POST | `/buildings/import` | `force`, `confirm` query params | Import OSM PBF |
@@ -434,6 +441,21 @@ Does not retrain models.
 
 **`POST /prediction/demand` response shape:** `resource_estimates` dict per target with `point_estimate`, `prediction_interval_lower`, `prediction_interval_upper`, `target_is_observed: false`.
 
+### Milestone 3
+
+| Method | Path | Request | Response |
+|--------|------|---------|----------|
+| GET | `/allocation/status` | — | Optimizer metadata |
+| POST | `/allocation/optimize` | `zone_ids`, `persist`, optional `confirm_all_zones` | LP allocation + flows |
+| GET | `/allocation/history` | — | Persisted allocation records |
+| POST | `/allocation/zones/{id}/priority` | priority level | Updated zone |
+| POST | `/allocation/zones/{id}/recalculate` | — | Re-run allocation for zone |
+| POST | `/allocation/route` | depot + zone coords | Road route (GraphML) or Haversine fallback |
+| GET | `/analytics/dashboard` | — | Operational KPIs |
+| GET/POST/PATCH | `/field-teams/*`, `/missions/*` | — | Teams and mission lifecycle |
+
+List endpoints `GET /zones/` and `GET /disasters/` return paginated `{total, offset, limit, records}`.
+
 ---
 
 ## 17. Testing Strategy and Current Results
@@ -450,10 +472,15 @@ Run: `cd backend && python -m pytest tests/ -v`
 | `test_prediction_api.py` | M2 API endpoints |
 | `test_prediction_edge_cases.py` | Invalid zone, intervals, history |
 | `test_scenario_simulation.py` | Scenario math |
-| `test_vulnerability.py` | Neutral fallback |
+| `test_vulnerability.py` | WorldPop cache weighting + neutral fallback |
 | `test_grid_district_intersection.py` | Polygon overlaps |
 | `test_satellite_service.py` | Mocked Overpass/STAC |
-| `test_ndma_service.py` | Mocked NDMA portal |
+| `test_ndma_service.py` | Mocked SACHET CAP ingestion |
+| `test_m3_allocation.py` | Allocation LP, routing, priority, transport cap |
+| `test_m3_resource_tracking.py` | Inventory reservation and mission side effects |
+| `test_road_routing.py` | Road graph shortest path (mocked tiny graph) |
+| `test_worldpop_vulnerability.py` | WorldPop vulnerability weighting |
+| `conftest.py` | SAVEPOINT-based DB isolation for tests |
 
 External APIs are **mocked in tests**. Live connectivity audited separately via `scripts/connectivity_probe.py`.
 
@@ -461,13 +488,14 @@ External APIs are **mocked in tests**. Live connectivity audited separately via 
 
 ## 18. External Data Sources
 
-| Source | Purpose | Local/Live | Status (2026-08-17) | Limitations |
-|--------|---------|------------|---------------------|-------------|
-| USGS GeoJSON | Earthquake feed | Live | Working (default URL) | US events focus |
-| GDACS | Global disaster alerts | Live | Requires `GDACS_URL` | Must configure |
-| NDMA SACHET | India alerts | Live portal | HTML only; no REST API on probed paths | Placeholder |
-| Overpass API | Nearby facilities | Live | Often slow/timeout | Safe fallback |
-| EarthSearch STAC | Sentinel-2 catalog | Live | Working (public, no creds) | Metadata only; no damage inference |
+| Source | Purpose | Local/Live | Availability (2026-08-17) | Limitations |
+|--------|---------|------------|---------------------------|-------------|
+| USGS GeoJSON | Earthquake feed | Live | Implemented (default URL) | US events focus |
+| GDACS | Global disaster alerts | Live | Implemented when `GDACS_URL` set | Must configure |
+| NDMA SACHET | India early-warning CAP | Live RSS/CAP | Implemented via SACHET RSS/CAP → `ndma_alerts` | Early warning only; not verified disaster impact or zone creation |
+| Overpass API | Nearby facilities | Live | Best-effort live query | Often slow/timeout; safe empty fallback |
+| EarthSearch STAC | Sentinel-2 catalog | Live | Implemented (public, no creds) | Used for metadata when outside EMS coverage; damage level Unknown |
+| Copernicus EMS EMSR357 | Flood damage polygons | Local DB import | Implemented via imported EMSR357 polygons (4,354 features in `satellite_assessments`) | Single activation coverage only; elsewhere STAC + Unknown |
 | Copernicus STAC | Sentinel-2 catalog | Live | Timeout in audit | Credentials may be needed for reliable access |
 | OSM PBF `india-latest.osm.pbf` | Buildings | Local 2026 | Required for grid analysis | Large file, gitignored |
 | WorldPop TIF | Population | Local 2026 | Required for population estimate | Current snapshot, not historical |
@@ -479,13 +507,13 @@ External APIs are **mocked in tests**. Live connectivity audited separately via 
 ## 19. Known Limitations
 
 1. Proxy ML targets are not observed resource consumption.
-2. NDMA automated ingestion not available.
-3. Satellite damage assessment not implemented (scene catalog only).
-4. M1 zones lack stored geometry.
-5. Overpass and Copernicus may be unreliable without retries/alternate endpoints.
+2. NDMA SACHET is early-warning CAP only (not verified impact or zone creation).
+3. Satellite damage lookup requires Copernicus EMS import; outside EMSR357 coverage, damage is Unknown.
+4. M1 zones store centroid lat/lon plus PostGIS point; full grid cell polygons are not persisted on the zone row.
+5. Overpass and Copernicus STAC may be unreliable without retries/alternate endpoints.
 6. GDACS requires environment configuration.
 7. ML models trained on historical proxy labels may not generalize to live events.
-8. Vulnerability demographics unavailable unless supplied via API.
+8. Vulnerability weighting uses cached WorldPop age/sex on zones when populated (`scripts/cache_zone_vulnerability.py`); otherwise neutral 1.0.
 
 ---
 
@@ -505,7 +533,8 @@ pip install -r requirements.txt
 ```
 DATABASE_URL=postgresql://user:pass@localhost:5432/disaster_db
 GDACS_URL=<gdacs geojson url>   # optional
-NDMA_URL=                       # future authenticated feed
+NDMA_SACHET_RSS_URL=              # SACHET CAP RSS feed (see settings.py)
+NDMA_SACHET_CAP_URL=              # optional CAP detail base URL
 OVERPASS_URL=                   # optional override
 SENTINEL_STAC_URL=              # optional override
 ```
@@ -574,11 +603,13 @@ python scripts/api_smoke_test.py
 
 ## 22. Future Weeks 5–6 Integration Plan (Architectural Only)
 
-**Not implemented.** Planned extensions:
+> **Historical (M1/M2 freeze, 2026-08-17):** The text below describes the planned scope before Milestone 3 was implemented. M3 delivered OR-Tools allocation, mission lifecycle, field teams, analytics dashboard, and frontend integration. See **§23 Milestone 3** and `docs/M3_COMPLETION_NOTES.md` for what is now in place.
+
+**Not implemented** *(as of 2026-08-17)*. Planned extensions:
 
 1. **Logistics optimization** — OR-Tools or similar for vehicle routing and resource allocation from predicted demand to relief centers/inventory.
 2. **Dashboard** — Frontend consuming `/grid/generate`, `/prediction/demand/zone/{id}`, scenario endpoints.
-3. **Real-time feeds** — Replace NDMA placeholder when official API available; optional satellite damage model on top of STAC metadata.
+3. **Real-time feeds** — NDMA SACHET early warning is live; extend with additional official feeds as needed. Copernicus EMS import covers demo regions; broader EMS coverage would require additional imports.
 4. **Authentication** — API keys/JWT for production deployment.
 
 **Integration points:** `disaster_zones`, `resource_inventory`, `relief_centers`, M2 `resource_estimates`, `prediction_history`.
@@ -587,17 +618,31 @@ python scripts/api_smoke_test.py
 
 ## 23. Final Milestone Status
 
-### Milestone 1 — **Complete (prototype)**
+### Milestone 1 — implemented scope (prototype)
 
-Working: CRUD, USGS import, grid pipeline, severity, rule resources, zone persistence, OSM/TIF integration, satellite nearby + STAC metadata endpoint.
+**Implemented:** CRUD, USGS import, grid pipeline, severity, rule resources, zone persistence, OSM/TIF integration.
 
-Intentionally incomplete: NDMA REST ingestion, automated satellite damage scoring.
+**NDMA:** SACHET RSS/CAP ingestion into `ndma_alerts` (early warning only; alerts are not auto-inserted as verified impact or zones).
 
-### Milestone 2 — **Complete (prototype)**
+**Satellite:** `/satellite/nearby` via Overpass (best-effort); `/satellite/damage` returns Copernicus EMS CEMS classifications inside imported EMSR357 coverage only; elsewhere Sentinel STAC metadata with `damage_level: Unknown`.
 
-Working: 33,032-record pipeline, proxy targets, Ridge models, conformal intervals, vulnerability fallback, district intersection, zone integration, recalibration, history, scenario APIs, 60+ tests.
+**Not implemented:** NDMA as disaster-impact feed; automated satellite damage outside imported EMS regions.
 
-Intentionally incomplete: Observed demand labels, live satellite damage, demographic vulnerability data.
+### Milestone 2 — implemented scope (prototype)
+
+**Implemented:** 33,032-record pipeline, proxy targets, Ridge models (selected after Random Forest and XGBoost comparison on validation RMSE), conformal intervals, district intersection, zone integration, recalibration, history, scenario APIs.
+
+**With documented limits:** WorldPop vulnerability weighting when zone cache is populated; neutral factor 1.0 otherwise. Training labels are proxy-derived (`target_is_observed=false`), not observed consumption. Reported MAE/RMSE/R² are proxy-formula fit diagnostics, not real-world predictive accuracy (`KNOWN_LIMITATIONS.md` §2.5).
+
+### Milestone 3 — implemented scope (prototype)
+
+**Implemented:** OR-Tools priority-weighted allocation (`/allocation/*`) with per-depot transport-capacity constraint (`compute_depot_transport_capacity_kg` — team-based mass budget + default payload cap; not full fleet VRP), commander priority override and per-zone recalculate, inventory reservation lifecycle (available → reserved → in-transit → delivered), mission lifecycle with enforced status transitions, field team CRUD and mission assignment (`PATCH /missions/{id}/team`), analytics dashboard KPIs from database, and React frontend pages wired to live APIs. Automated tests in `tests/test_m3_allocation.py` and `tests/test_m3_resource_tracking.py`.
+
+**Routing:** NetworkX on cached OSM GraphML when both endpoints fall in Chennai/Bhubaneswar/Delhi demo regions; Haversine fallback elsewhere; no live road-closure ingestion into edge weights.
+
+See `docs/M3_COMPLETION_NOTES.md` for route/service mapping and test coverage detail.
+
+**Prototype limits:** Road graphs limited to pre-built demo regions (`data/road_graphs/`); local-only manual deployment (no production hosting/CI in repo).
 
 ### Do NOT change when starting Weeks 5–6
 
@@ -609,4 +654,4 @@ Intentionally incomplete: Observed demand labels, live satellite damage, demogra
 
 ---
 
-*Document version: 2026-08-17 audit. See also `docs/MILESTONE2.md` for M2 checklist.*
+*Document version: M1/M2 freeze 2026-08-17. M3 addendum 2026-08-30. See also `docs/MILESTONE2.md` for M2 checklist and `docs/M3_COMPLETION_NOTES.md` for M3 detail.*

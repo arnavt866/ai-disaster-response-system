@@ -48,6 +48,11 @@ def test_damage_estimation_returns_scene_metadata_without_damage_score():
                     "eo:cloud_cover": 12.5,
                     "platform": "sentinel-2a",
                 },
+                "assets": {
+                    "thumbnail": {
+                        "href": "https://example.com/preview.jpg",
+                    }
+                },
             }
         ]
     }
@@ -56,6 +61,7 @@ def test_damage_estimation_returns_scene_metadata_without_damage_score():
     assert result["damage_level"] == "Unknown"
     assert result["imagery_available"] is True
     assert result["scene_metadata"]["scene_count"] == 1
+    assert result["preview_url"] == "https://example.com/preview.jpg"
 
 
 def test_damage_estimation_stac_failure_falls_back_safely():

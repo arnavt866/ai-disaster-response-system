@@ -1,5 +1,7 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
+from sqlalchemy.orm import Session
 
+from app.database.dependencies import get_db
 from app.services.geospatial.satellite_service import (
     get_damage_estimation,
     get_nearby_facilities,
@@ -7,7 +9,7 @@ from app.services.geospatial.satellite_service import (
 
 router = APIRouter(
     prefix="/satellite",
-    tags=["OpenStreetMap"]
+    tags=["OpenStreetMap"],
 )
 
 
@@ -15,12 +17,12 @@ router = APIRouter(
 def nearby_places(
     latitude: float,
     longitude: float,
-    radius: int = 5000
+    radius: int = 5000,
 ):
     return get_nearby_facilities(
         latitude,
         longitude,
-        radius
+        radius,
     )
 
 
@@ -28,5 +30,6 @@ def nearby_places(
 def damage_estimation(
     latitude: float,
     longitude: float,
+    db: Session = Depends(get_db),
 ):
-    return get_damage_estimation(latitude, longitude)
+    return get_damage_estimation(latitude, longitude, db=db)

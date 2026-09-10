@@ -4,7 +4,19 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>frontend</title>
+    <title>DRMS Command Center</title>
+    <script>
+      // Applied before first paint so the default dark shell never flashes light.
+      (function () {
+        try {
+          if (localStorage.getItem("theme") !== "light") {
+            document.documentElement.classList.add("dark");
+          }
+        } catch (e) {
+          document.documentElement.classList.add("dark");
+        }
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>

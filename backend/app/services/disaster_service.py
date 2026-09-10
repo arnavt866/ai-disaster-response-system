@@ -28,7 +28,24 @@ def create_disaster(db: Session, disaster: DisasterEventCreate):
 def get_all_disasters(
     db: Session,
 ) -> list[DisasterEvent]:
-    return db.query(DisasterEvent).all()
+    return db.query(DisasterEvent).order_by(DisasterEvent.id.asc()).all()
+
+
+def list_disasters(
+    db: Session,
+    *,
+    offset: int,
+    limit: int,
+) -> tuple[int, list[DisasterEvent]]:
+    query = db.query(DisasterEvent)
+    total = query.count()
+    rows = (
+        query.order_by(DisasterEvent.id.asc())
+        .offset(offset)
+        .limit(limit)
+        .all()
+    )
+    return total, rows
 
 def get_disaster_by_id(
     db: Session,

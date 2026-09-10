@@ -5,8 +5,20 @@ from sqlalchemy.orm import Session
 
 from app.database.dependencies import get_db
 from app.models.allocation_record import AllocationRecord
-from app.schemas.allocation import AllocationRunRequest, PriorityOverrideRequest, RouteRequest
+from app.schemas.allocation import (
+    AllocationRunRequest,
+    PriorityOverrideRequest,
+    RoadBlockClearRequest,
+    RoadBlockRequest,
+    RouteRequest,
+)
 from app.services.optimization.allocation_service import optimize_allocation, update_zone_priority
+from app.services.optimization.road_block_store import (
+    add_blocked_edge,
+    clear_blocked_edges,
+    list_blocked_edges,
+    remove_blocked_edge,
+)
 from app.services.optimization.routing_service import build_road_route
 from app.services.relief_service import get_relief_center_by_id
 from app.services.zone_service import get_zone_by_id
@@ -26,14 +38,42 @@ def allocation_status():
     }
 
 
+DEFAULT_UNBOUNDED_SANITY_CAP = 100
+
+
 @router.post("/optimize")
 def run_allocation(request: AllocationRunRequest, db: Session = Depends(get_db)):
+    is_unbounded = request.zone_ids is None or len(request.zone_ids) == 0
+    if is_unbounded and not request.confirm_all_zones:
+        raise HTTPException(
+            status_code=400,
+            detail=(
+                "Full-system allocation across all disaster zones requires explicit confirmation "
+                "to prevent accidental long-running full-system optimization. "
+                "Please specify target 'zone_ids' (e.g. [1, 2]) or set 'confirm_all_zones: true'."
+            ),
+        )
+
+    effective_cap = request.max_zones
+    if is_unbounded and effective_cap is None:
+        effective_cap = DEFAULT_UNBOUNDED_SANITY_CAP
+
     try:
-        return optimize_allocation(
+        result = optimize_allocation(
             db,
             request.zone_ids,
             persist=request.persist,
+            max_zones=effective_cap if is_unbounded else None,
+            allow_unbounded=is_unbounded and request.confirm_all_zones,
         )
+        if is_unbounded:
+            result["warning"] = (
+                f"Full-system optimization executed for {result.get('zone_count', 0)} zones "
+                f"(capped at {effective_cap} zones)."
+            )
+        return result
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
     except RuntimeError as exc:
         raise HTTPException(status_code=503, detail=str(exc)) from exc
 
@@ -111,3 +151,34 @@ def compute_route(request: RouteRequest, db: Session = Depends(get_db)):
         zone_lon=zone.longitude,
         blocked=request.blocked,
     )
+
+
+@router.get("/road-blocks")
+def get_road_blocks(region_id: str | None = None):
+    return {"blocks": list_blocked_edges(region_id)}
+
+
+@router.post("/road-blocks")
+def create_road_block(request: RoadBlockRequest):
+    if request.region_id not in {"chennai", "bhubaneswar", "delhi"}:
+        raise HTTPException(status_code=400, detail="Unknown demo region_id")
+    entry = add_blocked_edge(request.region_id, request.u, request.v)
+    return {"message": "Road segment marked blocked.", "block": entry}
+
+
+@router.delete("/road-blocks")
+def delete_road_block(request: RoadBlockRequest):
+    removed = remove_blocked_edge(request.region_id, request.u, request.v)
+    if not removed:
+        raise HTTPException(status_code=404, detail="Blocked edge not found")
+    return {"message": "Road segment unblocked."}
+
+
+@router.post("/road-blocks/clear")
+def clear_road_blocks(request: RoadBlockClearRequest):
+    removed = clear_blocked_edges(request.region_id)
+    return {
+        "message": "Road blocks cleared.",
+        "removed_count": removed,
+        "region_id": request.region_id,
+    }

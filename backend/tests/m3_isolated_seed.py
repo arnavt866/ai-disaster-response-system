@@ -14,7 +14,14 @@ def seed_isolated_depot(
     affected_population: int = 800,
     quantities: dict[str, int] | None = None,
 ) -> tuple[int, int, str]:
-    """Create a unique relief center + inventory so tests do not collide with dev data."""
+    """Create a unique relief center + inventory for this test.
+
+    Rows are written through TestClient / ``get_db``. The autouse SAVEPOINT
+    fixture in ``conftest.py`` rolls them back so they never persist in the
+    shared database (or they land only in ``TEST_DATABASE_URL`` if that is set).
+    Unique depot names still avoid colliding with committed production rows
+    that are visible inside the same transaction.
+    """
     quantities = quantities or {
         "food": 5000,
         "water": 10000,

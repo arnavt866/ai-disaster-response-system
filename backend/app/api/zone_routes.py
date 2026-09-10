@@ -2,13 +2,13 @@ from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
 
 from app.database.dependencies import get_db
-from app.schemas.disaster_zone import DisasterZoneCreate, DisasterZoneResponse
+from app.schemas.disaster_zone import DisasterZoneCreate, DisasterZoneListResponse, DisasterZoneResponse
 from app.services.zone_service import (
     create_zone,
     delete_zone,
-    get_all_zones,
     get_zone_by_id,
     get_zones_near_depot,
+    list_zones,
     update_zone,
 )
 
@@ -31,13 +31,20 @@ def create_disaster_zone(
     return create_zone(db, zone)
 
 
-@router.get("/", response_model=list[DisasterZoneResponse])
+@router.get("/", response_model=DisasterZoneListResponse)
 
 def get_zones(
+        offset: int = Query(0, ge=0),
+        limit: int = Query(100, ge=1, le=5000),
         db: Session = Depends(get_db)
 ):
-
-    return get_all_zones(db)
+    total, records = list_zones(db, offset=offset, limit=limit)
+    return {
+        "total": total,
+        "offset": offset,
+        "limit": limit,
+        "records": records,
+    }
 
 
 @router.get("/near-depot/{relief_center_id}", response_model=list[DisasterZoneResponse])

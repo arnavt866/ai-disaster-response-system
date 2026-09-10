@@ -25,7 +25,24 @@ def create_zone(db: Session, zone: DisasterZoneCreate) -> DisasterZone:
 
 def get_all_zones(db: Session) -> list[DisasterZone]:
 
-    return db.query(DisasterZone).all()
+    return db.query(DisasterZone).order_by(DisasterZone.id.asc()).all()
+
+
+def list_zones(
+    db: Session,
+    *,
+    offset: int,
+    limit: int,
+) -> tuple[int, list[DisasterZone]]:
+    query = db.query(DisasterZone)
+    total = query.count()
+    rows = (
+        query.order_by(DisasterZone.id.asc())
+        .offset(offset)
+        .limit(limit)
+        .all()
+    )
+    return total, rows
 
 def get_zone_by_id(
     db: Session,
@@ -64,6 +81,7 @@ def update_zone(
     )
     zone.affected_population = updated_zone.affected_population
     zone.status = updated_zone.status
+    zone.operational_priority = updated_zone.operational_priority
 
     db.commit()
 
@@ -117,6 +135,7 @@ def get_zones_near_depot(
 
     return (
         db.query(DisasterZone)
+        .filter(DisasterZone.status == "Active")
         .filter(DisasterZone.location.isnot(None))
         .filter(ST_DWithin(zone_geography, depot_geography, radius_m))
         .all()

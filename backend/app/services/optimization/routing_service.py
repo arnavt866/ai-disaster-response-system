@@ -23,6 +23,25 @@ def haversine_km(lat1: float, lon1: float, lat2: float, lon2: float) -> float:
     return radius_km * 2 * math.atan2(math.sqrt(a), math.sqrt(1 - a))
 
 
+def route_distance_km(lat1: float, lon1: float, lat2: float, lon2: float) -> float:
+    """Road-network distance when the pair is in a cached demo region; else Haversine.
+
+    Matches ``build_road_route`` coverage and fallback: never raises to callers.
+    """
+    try:
+        from app.services.optimization.road_graph import compute_road_path
+
+        road = compute_road_path(lat1, lon1, lat2, lon2)
+        if road is not None:
+            return float(road.distance_km)
+    except Exception as exc:
+        logger.warning(
+            "Road distance lookup failed; using Haversine fallback: %s",
+            exc,
+        )
+    return haversine_km(lat1, lon1, lat2, lon2)
+
+
 def build_route(
     *,
     depot_id: int,
@@ -114,13 +133,16 @@ def build_road_route(
                 "feasible": True,
                 "routing_method": "road_network_local_osm",
                 "routing_label": "Road-network routing (local OSM PBF + NetworkX shortest path)",
+                "region_id": road.region_id,
+                "path_edges": road.edges,
                 "geometry": {
                     "type": "LineString",
                     "coordinates": road.coordinates,
                 },
                 "note": (
                     "Route follows the cached local OSM drive network for the demo "
-                    "depot region. Falls back to Haversine when out of coverage."
+                    "depot region. Falls back to Haversine when out of coverage or "
+                    "when all road paths are blocked."
                 ),
             }
     except Exception as exc:
@@ -153,12 +175,12 @@ def nearest_depot(
         return None
     ranked = sorted(
         depots,
-        key=lambda depot: haversine_km(
+        key=lambda depot: route_distance_km(
             zone_lat, zone_lon, depot["latitude"], depot["longitude"]
         ),
     )
     nearest = ranked[0]
-    route = build_route(
+    route = build_road_route(
         depot_id=nearest["id"],
         depot_name=nearest["name"],
         depot_lat=nearest["latitude"],

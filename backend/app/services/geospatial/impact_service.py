@@ -8,6 +8,25 @@ from app.config.settings import (
     DEFAULT_CYCLONE_RADIUS,
 )
 
+# Canonical codes used by estimate_impact_radius (GDACS-style).
+_IMPACT_TYPE_ALIASES: dict[str, str] = {
+    "EQ": "EQ",
+    "EARTHQUAKE": "EQ",
+    "FL": "FL",
+    "FLOOD": "FL",
+    "TC": "TC",
+    "CYCLONE": "TC",
+    "TROPICAL CYCLONE": "TC",
+    "HURRICANE": "TC",
+    "TYPHOON": "TC",
+}
+
+
+def normalize_impact_disaster_type(disaster_type: str) -> str:
+    """Map feed-specific labels (e.g. USGS ``Earthquake``) to GDACS-style codes."""
+    key = disaster_type.strip().upper()
+    return _IMPACT_TYPE_ALIASES.get(key, key)
+
 
 def estimate_impact_radius(
     disaster_type: str,
@@ -19,7 +38,7 @@ def estimate_impact_radius(
     Heuristic only; satellite damage assessment is not integrated.
     """
 
-    disaster_type = disaster_type.upper()
+    disaster_type = normalize_impact_disaster_type(disaster_type)
 
     if disaster_type == "EQ":
         if magnitude is None:

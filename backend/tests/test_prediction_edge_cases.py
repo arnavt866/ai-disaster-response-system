@@ -39,6 +39,18 @@ def test_invalid_zone_id_returns_404():
             predict_demand_for_zone(mock_db, 99999)
 
 
+def test_predict_demand_compat_alias_delegates_to_zone_handler():
+    payload = {"zone_id": 1, "resource_estimates": {}}
+    with patch(
+        "app.api.prediction_routes.predict_zone_demand",
+        return_value=payload,
+    ) as handler:
+        response = client.post("/predict/demand/1", json={})
+    assert response.status_code == 200
+    assert response.json() == payload
+    handler.assert_called_once()
+
+
 @pytest.mark.skipif(
     not (MODEL_DIR / "model_registry.json").exists(),
     reason="Trained model artifacts not present",
@@ -157,6 +169,27 @@ def test_prediction_history_record_and_load(tmp_path, monkeypatch):
     loaded = load_prediction_history()
     assert len(loaded) == 1
     assert loaded[0]["zone_id"] == 1
+
+
+def test_prediction_history_skips_malformed_lines(tmp_path, monkeypatch, caplog):
+    import logging
+
+    history_file = tmp_path / "history.jsonl"
+    history_file.write_text(
+        '{"history_id": "ok-1", "zone_id": 1}\n'
+        "{not json\n"
+        "[]\n"
+        '{"history_id": "ok-2", "zone_id": 2}\n',
+        encoding="utf-8",
+    )
+    monkeypatch.setattr(
+        "app.services.prediction.prediction_history.HISTORY_FILE",
+        history_file,
+    )
+    caplog.set_level(logging.WARNING, logger="DisasterResponse")
+    loaded = load_prediction_history()
+    assert [row["history_id"] for row in loaded] == ["ok-1", "ok-2"]
+    assert "Skipping malformed prediction history line" in caplog.text
 
 
 @pytest.mark.skipif(

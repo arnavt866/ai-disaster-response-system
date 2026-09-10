@@ -32,6 +32,8 @@ if config.config_file_name is not None:
 # target_metadata = mymodel.Base.metadata
 from app.database.connection import Base
 from app.models.disaster_event import DisasterEvent
+from app.models.ndma_alert import NdmaAlert
+from app.models.satellite_assessment import SatelliteAssessment
 
 target_metadata = Base.metadata
 

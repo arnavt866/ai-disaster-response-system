@@ -11,7 +11,9 @@ from pathlib import Path
 from typing import Any
 
 import networkx as nx
+import numpy as np
 import osmium
+from scipy.spatial import cKDTree
 
 from app.config.settings import OSM_FILE, PROJECT_ROOT
 from app.services.optimization.routing_service import haversine_km
@@ -58,6 +60,8 @@ _GRAPH_CACHE: dict[str, nx.DiGraph] = {}
 class RoadPathResult:
     distance_km: float
     coordinates: list[list[float]]  # GeoJSON [lon, lat] pairs along the road path
+    region_id: str
+    edges: list[dict[str, Any]]  # [{u, v, length_m}, ...]
 
 
 def _graph_path(region_id: str) -> Path:
@@ -283,15 +287,57 @@ def load_region_graph(region_id: str) -> nx.DiGraph | None:
         return None
 
 
-def _nearest_node(graph: nx.DiGraph, lon: float, lat: float) -> Any:
-    """Snap a coordinate to the closest graph node."""
-    return min(
-        graph.nodes,
-        key=lambda node: (
-            (float(graph.nodes[node]["x"]) - lon) ** 2
-            + (float(graph.nodes[node]["y"]) - lat) ** 2
-        ),
+def _ensure_node_index(graph: nx.DiGraph) -> tuple[cKDTree, list[Any]]:
+    """Build (once per graph object) a KD-tree over node lon/lat."""
+    cached = graph.graph.get("_node_kdtree")
+    if cached is not None:
+        return cached
+
+    nodes = list(graph.nodes)
+    if not nodes:
+        raise ValueError("Road graph has no nodes")
+
+    coords = np.ascontiguousarray(
+        [
+            [float(graph.nodes[node]["x"]), float(graph.nodes[node]["y"])]
+            for node in nodes
+        ],
+        dtype=np.float64,
     )
+    index = (cKDTree(coords), nodes)
+    graph.graph["_node_kdtree"] = index
+    return index
+
+
+def _nearest_node(graph: nx.DiGraph, lon: float, lat: float) -> Any:
+    """Snap a coordinate to the closest graph node (O(log n) via KD-tree)."""
+    tree, nodes = _ensure_node_index(graph)
+    _distance, index = tree.query([lon, lat], k=1)
+    return nodes[int(index)]
+
+
+def _shortest_path_with_blocks(
+    graph: nx.DiGraph,
+    orig: Any,
+    dest: Any,
+    blocked: set[tuple[Any, Any]],
+) -> tuple[list[Any], float]:
+    if orig == dest:
+        return [orig], 0.0
+
+    routing_graph = graph
+    if blocked:
+        routing_graph = graph.copy()
+        for u, v in blocked:
+            if routing_graph.has_edge(u, v):
+                routing_graph.remove_edge(u, v)
+
+    route_nodes = nx.shortest_path(routing_graph, orig, dest, weight="length")
+    distance_m = sum(
+        float(routing_graph[route_nodes[i]][route_nodes[i + 1]]["length"])
+        for i in range(len(route_nodes) - 1)
+    )
+    return route_nodes, distance_m
 
 
 def compute_road_path(
@@ -314,14 +360,31 @@ def compute_road_path(
         return None
 
     try:
+        from app.services.optimization.road_block_store import blocked_edge_set
+
+        blocked = blocked_edge_set(region_id)
         orig = _nearest_node(graph, lon1, lat1)
         dest = _nearest_node(graph, lon2, lat2)
         if orig == dest:
             distance_m = 0.0
             route_nodes = [orig]
+            path_edges: list[dict[str, Any]] = []
         else:
-            route_nodes = nx.shortest_path(graph, orig, dest, weight="length")
-            distance_m = nx.shortest_path_length(graph, orig, dest, weight="length")
+            route_nodes, distance_m = _shortest_path_with_blocks(
+                graph, orig, dest, blocked
+            )
+            path_edges = [
+                {
+                    "u": route_nodes[i],
+                    "v": route_nodes[i + 1],
+                    "region_id": region_id,
+                    "length_m": round(
+                        float(graph[route_nodes[i]][route_nodes[i + 1]]["length"]),
+                        1,
+                    ),
+                }
+                for i in range(len(route_nodes) - 1)
+            ]
 
         coordinates = [
             [float(graph.nodes[node]["x"]), float(graph.nodes[node]["y"])]
@@ -333,6 +396,8 @@ def compute_road_path(
         return RoadPathResult(
             distance_km=round(distance_m / 1000.0, 2),
             coordinates=coordinates,
+            region_id=region_id,
+            edges=path_edges,
         )
     except Exception as exc:
         logger.warning(

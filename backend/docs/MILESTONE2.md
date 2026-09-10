@@ -36,18 +36,18 @@ DisasterZone (M1) → grid geometry / severity / analyze_grid
 
 ## 10-Day Implementation Checklist (Week 3–4)
 
-| Day | Requirement | Status | Implementation |
-|-----|-------------|--------|----------------|
-| **1** | Historical / ML dataset | ✅ | **33,032** real NWDP DESINVENTAR records (Odisha, TN, Uttarakhand). Day-1 originally mentioned a synthetic dataset; we intentionally use real historical records plus deterministic proxy targets because observed resource-demand labels were absent. See `historical_ml_dataset.csv`. |
-| **2** | Baseline regression | ✅ | Ridge, RF, XGBoost trained per target; chronological split by `event_year`. |
-| **3** | Feature engineering / model comparison | ✅ | `feature_schema.py`, `training.py`, `model_comparison_report.json`. Ridge selected (lowest val RMSE) for all 4 targets. |
-| **4** | Vulnerability weighting | ✅ | `vulnerability.py` — neutral factor `1.0` when demographics unavailable; optional API ratios. |
-| **5** | Dynamic recalibration / history | ✅ | `field_report_overrides` + `/demand/zone/{id}/recalculate` without retraining. History in `datasets/prediction_history.jsonl` (zone/grid ID, timestamp, source, model version, predictions + intervals). |
-| **6** | Scenario simulation | ✅ | `scenario_service.py` — `response_speed_factor`, `resource_availability_factor`, `severity_multiplier`. |
-| **7** | FastAPI demand endpoint + intervals | ✅ | `POST /prediction/demand` returns `resource_estimates` with conformal 90% intervals. |
-| **8** | Endpoint testing | ✅ | `tests/test_prediction_api.py`, edge-case and scenario tests. |
-| **9** | Direct Module-1 integration | ✅ | `zone_integration_service.py` consumes M1 `DisasterZone` → `analyze_grid` → M2 prediction → district overlap. Endpoints: `/demand/zone/{id}`, `/demand/zone/{id}/recalculate`. |
-| **10** | Bug fixing / review | ✅ | Final audit, M1 regression tests, 60+ tests passing. |
+| Day | Requirement | Implementation |
+|-----|-------------|----------------|
+| **1** | Historical / ML dataset | **33,032** real NWDP DESINVENTAR records (Odisha, TN, Uttarakhand). Day-1 originally mentioned a synthetic dataset; we intentionally use real historical records plus deterministic proxy targets because observed resource-demand labels were absent. See `historical_ml_dataset.csv`. |
+| **2** | Baseline regression | Ridge, Random Forest, and XGBoost were all trained and compared per target (chronological split by `event_year`); Ridge was selected as the production model based on lowest validation RMSE for all four targets. |
+| **3** | Feature engineering / model comparison | `feature_schema.py`, `training.py`, `model_comparison_report.json` record the comparison metrics used for model selection. |
+| **4** | Vulnerability weighting | `vulnerability.py` applies WorldPop age/sex weighting when zone cache is populated (`vulnerability_data_available`); neutral factor `1.0` when cache is absent. Populate via `scripts/cache_zone_vulnerability.py`. |
+| **5** | Dynamic recalibration / history | `field_report_overrides` + `/demand/zone/{id}/recalculate` without retraining. History appends to `datasets/prediction_history.jsonl` (zone/grid ID, timestamp, source, model version, predictions + intervals). Satellite input uses EMS classifications only inside imported EMSR357 coverage. |
+| **6** | Scenario simulation | `scenario_service.py` — `response_speed_factor`, `resource_availability_factor`, `severity_multiplier`. Exposed via `POST /prediction/scenario` (backend); frontend scenario controls on AI Demand. |
+| **7** | FastAPI demand endpoint + intervals | `POST /prediction/demand` returns `resource_estimates` with conformal 90% intervals. |
+| **8** | Endpoint testing | `tests/test_prediction_api.py`, edge-case and scenario tests. |
+| **9** | Direct Module-1 integration | `zone_integration_service.py` consumes M1 `DisasterZone` → `analyze_grid` → M2 prediction → district overlap. Endpoints: `/demand/zone/{id}`, `/demand/zone/{id}/recalculate`. |
+| **10** | Bug fixing / review | M1 regression and M2 pytest modules; see `CURRENT_STATE_VERIFIED.md` for measured pass counts on a filtered run. |
 
 ## Historical Data
 
@@ -77,7 +77,9 @@ Chronological split by `event_year` (train / validation / test). No random shuff
 
 ### Selection criterion
 
-Lowest **validation RMSE** per target.
+Lowest **validation RMSE** per target (comparing Ridge, Random Forest, and XGBoost on the chronological holdout years).
+
+> **Metrics interpretation:** MAE, RMSE, and R² in `model_registry.json` measure fit to **proxy-constructed** labels, not observed relief consumption. All four proxy targets are 100% reconstructable from model input features alone (see `KNOWN_LIMITATIONS.md` §2.5). High validation R² (e.g. food ~0.997) confirms the model learned the proxy formula, not real-world forecast accuracy.
 
 ### Train models
 
@@ -100,7 +102,8 @@ Artifacts saved to `backend/models/`.
 Historical XML does **not** contain reliable elderly/children/medically-dependent demographics.
 
 - Module: `app/services/prediction/vulnerability.py`
-- Default: neutral factor `1.0` when data unavailable
+- **WorldPop path:** when `disaster_zones.vulnerability_data_available` is true (cached via `scripts/cache_zone_vulnerability.py`), age/sex ratios from WorldPop drive the weighting factor
+- Default: neutral factor `1.0` when cache is absent
 - Accepts optional ratios when provided via API
 
 ## Grid / District Integration
@@ -138,7 +141,7 @@ M1 grid generation and severity logic are **not** replaced or duplicated.
 ## Dynamic Recalibration
 
 - Field reports via `field_report_overrides` on grid/zone endpoints
-- Satellite input: optional `satellite_placeholder` (status metadata only, no fabricated damage)
+- Satellite input: Copernicus EMS damage when in imported coverage (`satellite_assessments`); optional `satellite_placeholder` metadata; outside coverage damage is Unknown
 - Each prediction appends to `backend/datasets/prediction_history.jsonl`
 - Model artifacts are **not** retrained on recalculation
 
@@ -146,10 +149,10 @@ M1 grid generation and severity logic are **not** replaced or duplicated.
 
 1. Resource targets are **proxy-derived**, not observed ground truth
 2. 2026 OSM/TIF are **current** spatial inputs, not historical labels
-3. **Satellite** damage assessment is a placeholder
-4. **NDMA** integration is a placeholder
-5. Vulnerability demographics unavailable unless explicitly supplied
-6. M1 zones store centroids only; grid cell rebuilt from `GRID_CELL_SIZE`
+3. **Satellite** damage uses Copernicus EMS import in demo regions; outside coverage, damage is Unknown (STAC metadata only)
+4. **NDMA SACHET** provides early-warning CAP alerts only (`ndma_alerts`); not disaster impact ingestion
+5. Vulnerability uses cached WorldPop on zones when populated; otherwise neutral 1.0 unless API ratios supplied
+6. M1 zones store centroids as lat/lon plus PostGIS `location`; full grid cell rebuilt from `GRID_CELL_SIZE` for prediction
 7. Zero-inflated impact data produces many zero proxy targets
 
 ## Testing

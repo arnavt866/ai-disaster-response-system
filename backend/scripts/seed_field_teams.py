@@ -17,6 +17,7 @@ FIELD_TEAMS = [
         "team_name": "Alpha Response",
         "vehicle_type": "Truck",
         "vehicle_capacity": 5000,
+        "personnel_count": 8,
         "contact_number": "+91-98765-10001",
         "base_latitude": 20.2961,
         "base_longitude": 85.8245,

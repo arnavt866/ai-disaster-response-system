@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from pydantic import BaseModel, Field
 
 
@@ -20,6 +22,18 @@ class DisasterZoneCreate(DisasterZoneBase):
 
 class DisasterZoneResponse(DisasterZoneBase):
     id: int
+    elderly_share: float | None = None
+    child_share: float | None = None
+    vulnerability_data_available: bool = False
+    vulnerability_source: str | None = None
+    vulnerability_computed_at: datetime | None = None
 
     class Config:
         from_attributes = True
+
+
+class DisasterZoneListResponse(BaseModel):
+    total: int
+    offset: int
+    limit: int
+    records: list[DisasterZoneResponse]

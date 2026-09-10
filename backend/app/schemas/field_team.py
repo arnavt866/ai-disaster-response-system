@@ -7,9 +7,14 @@ class FieldTeamCreate(BaseModel):
     team_name: str
     vehicle_type: str | None = None
     vehicle_capacity: int = Field(0, ge=0)
+    personnel_count: int | None = Field(None, ge=0)
     contact_number: str | None = None
     base_latitude: float | None = Field(None, ge=-90, le=90)
     base_longitude: float | None = Field(None, ge=-180, le=180)
+
+
+class FieldTeamUpdate(FieldTeamCreate):
+    status: str | None = None
 
 
 class FieldTeamResponse(FieldTeamCreate):

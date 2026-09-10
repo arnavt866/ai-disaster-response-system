@@ -9,6 +9,7 @@ from typing import Any
 from uuid import uuid4
 
 from app.config.settings import DATASET_DIR
+from app.core.logger import logger
 
 HISTORY_FILE = DATASET_DIR / "prediction_history.jsonl"
 
@@ -49,9 +50,27 @@ def load_prediction_history(limit: int = 100) -> list[dict[str, Any]]:
 
     entries: list[dict[str, Any]] = []
     with HISTORY_FILE.open(encoding="utf-8") as handle:
-        for line in handle:
-            line = line.strip()
-            if line:
-                entries.append(json.loads(line))
+        for line_number, raw_line in enumerate(handle, start=1):
+            line = raw_line.strip()
+            if not line:
+                continue
+            try:
+                parsed = json.loads(line)
+            except json.JSONDecodeError as exc:
+                logger.warning(
+                    "Skipping malformed prediction history line %s in %s: %s",
+                    line_number,
+                    HISTORY_FILE,
+                    exc,
+                )
+                continue
+            if isinstance(parsed, dict):
+                entries.append(parsed)
+            else:
+                logger.warning(
+                    "Skipping non-object prediction history line %s in %s",
+                    line_number,
+                    HISTORY_FILE,
+                )
 
     return entries[-limit:]

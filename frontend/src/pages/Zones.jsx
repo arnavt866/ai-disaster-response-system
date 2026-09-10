@@ -8,9 +8,10 @@ import Pagination from "../components/ui/Pagination"
 import Badge from "../components/ui/Badge"
 import { severityBadge } from "../utils/badgeUtils"
 import { ErrorState } from "../components/ui/StateMessage"
+import InfoTooltip from "../components/ui/InfoTooltip"
+import { computeZoneVulnerabilityFactor } from "../utils/vulnerabilityHelpers"
 import usePagination from "../hooks/usePagination"
-
-const PAGE_SIZE = 15
+import useResponsivePageSize from "../hooks/useResponsivePageSize"
 
 export default function Zones() {
   const [searchParams] = useSearchParams()
@@ -48,6 +49,11 @@ export default function Zones() {
     [zones],
   )
 
+  const statusOptions = useMemo(
+    () => ["All", ...new Set(zones.map((z) => z.status).filter(Boolean))],
+    [zones],
+  )
+
   const priorityOptions = useMemo(
     () => ["All", ...new Set(zones.map((z) => z.operational_priority || z.severity).filter(Boolean))],
     [zones],
@@ -70,6 +76,7 @@ export default function Zones() {
     })
   }, [zones, searchTerm, statusFilter, severityFilter, activePriorityFilter])
 
+  const pageSize = useResponsivePageSize()
   const {
     page,
     pageItems,
@@ -81,16 +88,20 @@ export default function Zones() {
     resetPage,
     hasPrevious,
     hasNext,
-  } = usePagination(filtered, PAGE_SIZE)
+  } = usePagination(filtered, pageSize)
 
   const displayedZone =
     pageItems.find((zone) => zone.id === selectedZoneId) ?? pageItems[0] ?? null
+
+  const displayedVulnerability = displayedZone
+    ? computeZoneVulnerabilityFactor(displayedZone)
+    : null
 
   if (loading) {
     return (
       <div className="space-y-3">
         <PageHeader title="Disaster Zones" subtitle="Active zones from backend disaster zone service" />
-        <p className="text-sm text-[var(--text-muted)]">Loading zones...</p>
+        <p className="ops-muted">Loading zones...</p>
       </div>
     )
   }
@@ -109,8 +120,9 @@ export default function Zones() {
           />
           <Select value={statusFilter} onChange={(e) => { setStatusFilter(e.target.value); resetPage() }}>
             <option value="All">All Statuses</option>
-            <option value="Active">Active</option>
-            <option value="Inactive">Inactive</option>
+            {statusOptions.filter((v) => v !== "All").map((status) => (
+              <option key={status} value={status}>{status}</option>
+            ))}
           </Select>
           <Select value={severityFilter} onChange={(e) => { setSeverityFilter(e.target.value); resetPage() }}>
             <option value="All">All Severities</option>
@@ -133,19 +145,19 @@ export default function Zones() {
             <table className="ops-table min-w-full">
               <thead>
                 <tr className="border-b border-[var(--border)] text-left">
-                  <th className="px-3 py-2">Zone</th>
-                  <th className="px-3 py-2">Type</th>
-                  <th className="px-3 py-2">Severity</th>
-                  <th className="px-3 py-2">Priority</th>
-                  <th className="px-3 py-2">Population</th>
-                  <th className="px-3 py-2">Status</th>
-                  <th className="px-3 py-2">Action</th>
+                  <th >Zone</th>
+                  <th >Type</th>
+                  <th >Severity</th>
+                  <th >Priority</th>
+                  <th >Population</th>
+                  <th >Status</th>
+                  <th >Action</th>
                 </tr>
               </thead>
               <tbody>
                 {pageItems.length === 0 ? (
                   <tr>
-                    <td colSpan={7} className="px-3 py-6 text-center text-sm text-[var(--text-muted)]">
+                    <td colSpan={7} className="px-3 py-6 text-center ops-muted">
                       No zones found.
                     </td>
                   </tr>
@@ -158,22 +170,22 @@ export default function Zones() {
                       }`}
                       onClick={() => setSelectedZoneId(zone.id)}
                     >
-                      <td className="px-3 py-2 font-medium">{zone.zone_name}</td>
-                      <td className="px-3 py-2">{zone.disaster_type}</td>
-                      <td className="px-3 py-2">
+                      <td className="font-medium">{zone.zone_name}</td>
+                      <td >{zone.disaster_type}</td>
+                      <td >
                         <Badge variant={severityBadge(zone.severity)}>{zone.severity}</Badge>
                       </td>
-                      <td className="px-3 py-2">
+                      <td >
                         <Badge variant={severityBadge(zone.operational_priority || zone.severity)}>
                           {zone.operational_priority || zone.severity}
                         </Badge>
                       </td>
-                      <td className="px-3 py-2">{zone.affected_population?.toLocaleString() ?? "—"}</td>
-                      <td className="px-3 py-2">{zone.status}</td>
-                      <td className="px-3 py-2">
+                      <td >{zone.affected_population?.toLocaleString() ?? "—"}</td>
+                      <td >{zone.status}</td>
+                      <td >
                         <Link
-                          to={`/?lat=${zone.latitude}&lon=${zone.longitude}&zoom=10`}
-                          className="text-sm font-medium text-[var(--primary)] hover:underline"
+                          to={`/dashboard?lat=${zone.latitude}&lon=${zone.longitude}&zoom=10`}
+                          className="font-medium text-[var(--primary)] hover:underline"
                           onClick={(e) => e.stopPropagation()}
                         >
                           View on map
@@ -199,20 +211,40 @@ export default function Zones() {
         </div>
 
         <div className="ops-card p-3">
-          <h2 className="mb-2 text-sm font-semibold">Zone Detail</h2>
+          <h2 className="mb-2 ops-section-title">Zone Detail</h2>
           {!displayedZone ? (
-            <p className="text-sm text-[var(--text-muted)]">Select a zone to view details.</p>
+            <p className="ops-muted">Select a zone to view details.</p>
           ) : (
-            <dl className="space-y-2 text-sm">
+            <dl className="space-y-2">
               <div><dt className="text-[var(--text-muted)]">Zone ID</dt><dd className="font-medium">{displayedZone.zone_name}</dd></div>
               <div><dt className="text-[var(--text-muted)]">Type</dt><dd>{displayedZone.disaster_type}</dd></div>
               <div><dt className="text-[var(--text-muted)]">Severity</dt><dd>{displayedZone.severity}</dd></div>
               <div><dt className="text-[var(--text-muted)]">Priority</dt><dd>{displayedZone.operational_priority || displayedZone.severity}</dd></div>
               <div><dt className="text-[var(--text-muted)]">Population</dt><dd>{displayedZone.affected_population?.toLocaleString() ?? "—"}</dd></div>
+              <div>
+                <dt className="inline-flex items-center text-[var(--text-muted)]">
+                  Vulnerability factor
+                  <InfoTooltip
+                    label="About vulnerability factor"
+                    text="Demand multiplier from WorldPop age shares: elderly (+15%) and children (+10%) increase estimated need. Shows 1.0 when census data is not cached for this zone."
+                  />
+                </dt>
+                <dd className="font-medium">
+                  {displayedVulnerability?.available
+                    ? displayedVulnerability.factor
+                    : "1.0 (neutral)"}
+                </dd>
+                {displayedZone.vulnerability_data_available && (
+                  <dd className="mt-1 text-[var(--text-secondary)]">
+                    Elderly {((displayedZone.elderly_share ?? 0) * 100).toFixed(1)}% ·
+                    Children {((displayedZone.child_share ?? 0) * 100).toFixed(1)}%
+                  </dd>
+                )}
+              </div>
               <div><dt className="text-[var(--text-muted)]">Status</dt><dd>{displayedZone.status}</dd></div>
               <div>
                 <dt className="text-[var(--text-muted)]">Coordinates</dt>
-                <dd className="text-xs text-[var(--text-secondary)]">
+                <dd className="text-[var(--text-secondary)]">
                   {displayedZone.latitude?.toFixed(4)}, {displayedZone.longitude?.toFixed(4)}
                 </dd>
               </div>

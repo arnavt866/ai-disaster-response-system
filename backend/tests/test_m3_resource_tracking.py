@@ -163,3 +163,49 @@ def test_mission_dispatch_and_delivery_inventory():
         item for item in final if item["category"] == "food" and item["warehouse"] == depot_name
     )
     assert food_final["in_transit_quantity"] == 0
+
+
+def test_release_orphaned_reservations_inactive_depot(_db_savepoint_isolation):
+    import uuid
+
+    from app.models.relief_center import ReliefCenter
+    from app.models.resource_inventory import ResourceInventory
+    from app.services.optimization.resource_tracking_service import (
+        _free_quantity,
+        release_orphaned_reservations_for_inactive_depots,
+    )
+
+    db = _db_savepoint_isolation
+    name = f"Orphan Depot {uuid.uuid4().hex[:8]}"
+    db.add(
+        ReliefCenter(
+            name=name,
+            address="Isolated test depot",
+            latitude=28.6139,
+            longitude=77.2090,
+            capacity=10000,
+            available_capacity=10000,
+            status="Inactive",
+        )
+    )
+    row = ResourceInventory(
+        resource_name="food stock",
+        category="food",
+        quantity=500,
+        reserved_quantity=120,
+        in_transit_quantity=10,
+        unit="units",
+        warehouse=name,
+        status="Available",
+    )
+    db.add(row)
+    db.commit()
+
+    result = release_orphaned_reservations_for_inactive_depots(db)
+    db.refresh(row)
+    assert row.reserved_quantity == 0
+    assert row.in_transit_quantity == 10
+    assert row.quantity == 500
+    assert result["rows_released"] >= 1
+    assert result["reserved_units_released"] >= 120
+    assert _free_quantity(row) == 490

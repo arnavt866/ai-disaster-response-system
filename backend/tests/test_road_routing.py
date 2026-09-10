@@ -4,7 +4,7 @@ import networkx as nx
 import pytest
 
 from app.services.optimization import road_graph
-from app.services.optimization.routing_service import build_road_route, build_route
+from app.services.optimization.routing_service import build_road_route, build_route, nearest_depot
 
 
 def _tiny_bhubaneswar_graph() -> nx.DiGraph:
@@ -51,6 +51,21 @@ def test_road_route_returns_valid_path(patched_bhubaneswar_graph):
     assert route["estimated_travel_hours"] > 0
 
 
+def test_nearest_node_matches_linear_scan():
+    graph = _tiny_bhubaneswar_graph()
+    lon, lat = 85.8500, 20.3200
+    kd_node = road_graph._nearest_node(graph, lon, lat)
+    linear_node = min(
+        graph.nodes,
+        key=lambda node: (
+            (float(graph.nodes[node]["x"]) - lon) ** 2
+            + (float(graph.nodes[node]["y"]) - lat) ** 2
+        ),
+    )
+    assert kd_node == linear_node
+    assert road_graph._nearest_node(graph, lon, lat) == kd_node
+
+
 def test_road_route_falls_back_to_haversine():
     route = build_road_route(
         depot_id=1,
@@ -79,3 +94,28 @@ def test_road_route_falls_back_to_haversine():
     )
     assert route["distance_km"] == baseline["distance_km"]
     assert route["estimated_travel_hours"] == baseline["estimated_travel_hours"]
+
+
+def test_nearest_depot_uses_road_route(patched_bhubaneswar_graph):
+    depots = [
+        {
+            "id": 6,
+            "name": "Bhubaneswar Depot",
+            "latitude": 20.2961,
+            "longitude": 85.8245,
+            "zone_id": 100,
+            "zone_name": "EQ Zone",
+        },
+        {
+            "id": 99,
+            "name": "Far Depot",
+            "latitude": 20.3500,
+            "longitude": 85.8800,
+            "zone_id": 100,
+            "zone_name": "EQ Zone",
+        },
+    ]
+    route = nearest_depot(20.3100, 85.8400, depots)
+    assert route is not None
+    assert route["depot_id"] == 6
+    assert route["routing_method"] == "road_network_local_osm"

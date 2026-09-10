@@ -14,12 +14,23 @@ def test_health_endpoint():
     assert "running" in response.json()["message"].lower()
 
 
-def test_ndma_placeholder_still_works():
-    response = client.get("/ndma/")
+def test_ndma_route_returns_sachet_status():
+    from unittest.mock import patch
+
+    payload = {
+        "status": "no_alerts",
+        "source": "NDMA SACHET",
+        "portal_url": "https://sachet.ndma.gov.in/",
+        "alert_count": 0,
+        "alerts": [],
+    }
+    with patch("app.api.ndma_routes.fetch_ndma_events", return_value=payload):
+        response = client.get("/ndma/")
     assert response.status_code == 200
     body = response.json()
-    assert body["status"] == "Not Implemented"
+    assert body["status"] in {"ok", "no_alerts", "unavailable"}
     assert "portal_url" in body
+    assert body["status"] != "Not Implemented"
 
 
 def test_satellite_damage_endpoint_returns_unknown_damage_level():
@@ -37,8 +48,25 @@ def test_satellite_damage_endpoint_returns_unknown_damage_level():
     assert response.json()["damage_level"] == "Unknown"
 
 
+def test_impact_radius_normalizes_usgs_earthquake_label():
+    from app.services.geospatial.impact_service import estimate_impact_radius
+
+    assert estimate_impact_radius("Earthquake", magnitude=7.5) == 150
+    assert estimate_impact_radius("EQ", magnitude=7.5) == 150
+    assert estimate_impact_radius("Flood", alert_level="Red") == 120
+    assert estimate_impact_radius("FL", alert_level="Red") == 120
+
+
 def test_gdacs_route_exists():
-    response = client.get("/gdacs/import")
+    import httpx
+
+    # Match production GDACS httpx read timeout (120s); default TestClient is 5s.
+    previous_timeout = client.timeout
+    client.timeout = httpx.Timeout(120.0)
+    try:
+        response = client.get("/gdacs/import")
+    finally:
+        client.timeout = previous_timeout
     # May fail on network but route must exist (not 404)
     assert response.status_code != 404
 

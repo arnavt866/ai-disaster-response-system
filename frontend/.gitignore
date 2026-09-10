@@ -29,3 +29,7 @@ dist/
 .env.*
 !.env.example
 .vscode/
+
+# Playwright bulky artifacts (keep *.spec.js; ignore screenshots and reports)
+tests/e2e/results/
+tests/e2e/_tmp-*.spec.js

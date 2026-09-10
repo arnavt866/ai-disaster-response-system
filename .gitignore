@@ -7,6 +7,13 @@ backend/cache/
 backend/logs/
 backend/datasets/
 backend/models/
+backend/reports/
+
+# DB demo snapshots (large; restore locally via scripts/export_demo_snapshot.*)
+backend/snapshots/
+backend/snapshots/*.dump
+backend/snapshots/*.sql
+backend/snapshots/*.sql.gz
 
 # ML / prediction runtime logs
 backend/datasets/prediction_history.jsonl
@@ -15,20 +22,36 @@ backend/datasets/prediction_history.jsonl
 backend/data/road_graphs/
 
 # =============================================================================
-# Project documentation and explanation notes (local reference only)
+# Project documentation and local guides (reference only — not for the repo)
 # =============================================================================
 
+DBMS_PROJECT_REPORT.md
+DEPLOYMENT.md
+MENTOR_GAP_REPORT.md
+PROJECT_GUIDE_AND_DEMO.md
 PROJECT_STUDENT_GUIDE.md
+
+docs/
+docs/**
+
+# In-repo backend docs folder (local reference / milestone notes)
 backend/docs/
 backend/docs/**
 
 # Dataset analysis / methodology reports
 backend/datasets/reports/
 
+# Mentor spec exports (Word/Excel text dumps)
+docs/spec/
+
 # =============================================================================
-# Dev-only scripts (debug, cleanup, one-off data fixes)
+# Dev-only / one-off scripts (debug, audit, cleanup, data fixes)
 # =============================================================================
 
+backend/check_*.py
+backend/fix_*.py
+
+backend/scripts/_tmp_*.py
 backend/scripts/debug_*.py
 backend/scripts/diagnose_*.py
 backend/scripts/investigate_*.py
@@ -40,6 +63,8 @@ backend/scripts/report_test_data.py
 backend/scripts/check_gdacs_types.py
 backend/scripts/inventory_reconciliation_report.py
 backend/requirements.txt.backup
+backend/requirements-load.txt
+backend/scripts/load/
 
 # =============================================================================
 # Python
@@ -51,6 +76,7 @@ __pycache__/
 *.pyo
 .pytest_cache/
 .mypy_cache/
+.ruff_cache/
 .venv/
 venv/
 env/
@@ -78,6 +104,9 @@ logs/
 .vscode/
 .DS_Store
 Thumbs.db
+*.swp
+*.swo
+*~
 
 # =============================================================================
 # Build / coverage
@@ -99,6 +128,10 @@ frontend/node_modules/
 frontend/dist/
 frontend/.vite/
 *.local
+
+# Playwright / E2E bulky artifacts (keep *.spec.js, ignore captures)
+frontend/tests/e2e/results/
+frontend/tests/e2e/_tmp-*.spec.js
 
 # =============================================================================
 # SQLite (if used locally)

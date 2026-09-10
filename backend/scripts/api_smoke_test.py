@@ -27,6 +27,7 @@ check("impact_estimate_validation", "get", "/impact/estimate")
 check("model", "get", "/prediction/model")
 check("evaluation", "get", "/prediction/evaluation")
 check("history", "get", "/prediction/history")
+check("system_metadata", "get", "/system/metadata")
 
 demand_payload = {
     "features": {
